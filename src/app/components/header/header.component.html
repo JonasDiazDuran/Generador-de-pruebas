@@ -1,0 +1,39 @@
+<header class="header">
+  <div class="header-inner">
+    <button class="logo-btn" (click)="navigate.emit('home')">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">ExamGen</span>
+        <span class="logo-subtitle">Generador de Examenes</span>
+      </div>
+    </button>
+
+    <nav class="nav-desktop hide-mobile">
+      @for (item of navItems; track item.view) {
+        <button
+          class="btn"
+          [ngClass]="currentView === item.view ? 'btn-primary' : 'btn-ghost'"
+          (click)="navigate.emit(item.view)"
+        >
+          <span [innerHTML]="item.icon"></span>
+          {{ item.label }}{{ item.view === 'results' && resultsCount > 0 ? ' (' + resultsCount + ')' : '' }}
+        </button>
+      }
+    </nav>
+
+    <nav class="nav-mobile hide-desktop">
+      @for (item of navItems; track item.view) {
+        <button
+          class="btn btn-icon"
+          [ngClass]="currentView === item.view ? 'btn-primary' : 'btn-ghost'"
+          (click)="navigate.emit(item.view)"
+          [attr.aria-label]="item.label"
+        >
+          <span [innerHTML]="item.icon"></span>
+        </button>
+      }
+    </nav>
+  </div>
+</header>

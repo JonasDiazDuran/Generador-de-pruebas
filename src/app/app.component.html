@@ -1,0 +1,30 @@
+<div class="app-shell">
+  <app-header
+    [currentView]="currentView"
+    [resultsCount]="(results$ | async)?.length || 0"
+    (navigate)="navigateTo($event)"
+  ></app-header>
+
+  <main class="main-content">
+    @switch (currentView) {
+      @case ('home') {
+        <app-home (navigate)="navigateTo($event)"></app-home>
+      }
+      @case ('exam') {
+        <app-exam (complete)="onExamComplete($event)"></app-exam>
+      }
+      @case ('bank') {
+        <app-bank></app-bank>
+      }
+      @case ('results') {
+        <app-results></app-results>
+      }
+    }
+  </main>
+
+  <footer class="footer">
+    ExamGen - Generador de Examenes Aleatorios
+  </footer>
+
+  <app-toast></app-toast>
+</div>

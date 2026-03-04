@@ -1,0 +1,173 @@
+<!-- SETUP PHASE -->
+@if (phase === 'setup') {
+  <div class="setup">
+    <div class="setup-header">
+      <div class="setup-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h2 class="setup-title">Configurar Examen</h2>
+      <p class="setup-desc">Se seleccionaran 100 preguntas aleatoriamente del banco de 300 preguntas.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-content setup-form">
+        <label for="studentName" class="label">Nombre del Estudiante</label>
+        <input
+          id="studentName"
+          class="input"
+          placeholder="Ingresa tu nombre completo"
+          [(ngModel)]="studentName"
+          (keydown.enter)="startExam()"
+        >
+        <button class="btn btn-primary btn-lg" style="width:100%" (click)="startExam()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+          Generar y Comenzar Examen
+        </button>
+      </div>
+    </div>
+
+    <div class="instructions card">
+      <div class="card-content">
+        <div class="instructions-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Instrucciones
+        </div>
+        <ul class="instructions-list">
+          <li>El examen consta de 100 preguntas de opcion multiple</li>
+          <li>Cada pregunta tiene 4 opciones de respuesta</li>
+          <li>Las preguntas y opciones se mezclan aleatoriamente</li>
+          <li>Al finalizar podras ver tu calificacion y exportar a Excel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- TAKING PHASE -->
+@if (phase === 'taking') {
+  <div class="taking">
+    <!-- Progress -->
+    <div class="card">
+      <div class="card-content progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Respondidas: <strong>{{ answeredCount }}</strong> / {{ questions.length }}</span>
+          <span class="progress-pct">{{ getProgressPct() }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="getProgressPct()"></div>
+        </div>
+        <div class="progress-footer">
+          <span>Estudiante: {{ studentName }}</span>
+          <span>Pagina {{ currentPage + 1 }} de {{ totalPages }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    @for (q of currentQuestions; track q.id; let idx = $index) {
+      <div class="card question-card">
+        <div class="question-header">
+          <span class="question-number">{{ currentPage * QUESTIONS_PER_PAGE + idx + 1 }}.</span>
+          {{ q.question }}
+        </div>
+        <div class="options">
+          @for (option of q.shuffledOptions; track option; let optIdx = $index) {
+            <button
+              class="option-btn"
+              [class.selected]="answers[q.id] === optIdx"
+              (click)="selectAnswer(q.id, optIdx)"
+            >
+              <span class="option-letter" [class.selected]="answers[q.id] === optIdx">
+                {{ getLetter(optIdx) }}
+              </span>
+              {{ option }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="btn btn-outline" [disabled]="currentPage === 0" (click)="prevPage()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Anterior
+      </button>
+
+      <div class="page-dots">
+        @for (p of pages; track p) {
+          <button
+            class="page-dot"
+            [class.active]="currentPage === p"
+            (click)="currentPage = p"
+          >{{ p + 1 }}</button>
+        }
+      </div>
+
+      @if (currentPage < totalPages - 1) {
+        <button class="btn btn-outline" (click)="nextPage()">
+          Siguiente
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      } @else {
+        <button class="btn btn-primary" (click)="submitExam()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          Enviar Examen
+        </button>
+      }
+    </div>
+  </div>
+}
+
+<!-- REVIEW PHASE -->
+@if (phase === 'review' && result) {
+  <div class="review">
+    <div class="card score-card" [class.passing]="result.percentage >= 60" [class.failing]="result.percentage < 60">
+      <div class="card-content score-content">
+        <div class="score-icon" [class.passing]="result.percentage >= 60" [class.failing]="result.percentage < 60">
+          @if (result.percentage >= 60) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          }
+        </div>
+        <div class="score-number">{{ result.percentage }}%</div>
+        <div class="score-sub">{{ result.score }} de {{ result.totalQuestions }} respuestas correctas</div>
+        <span class="badge" [class.badge-success]="result.percentage >= 60" [class.badge-destructive]="result.percentage < 60">
+          {{ result.percentage >= 60 ? 'Aprobado' : 'Reprobado' }}
+        </span>
+        <div class="score-info">Estudiante: {{ result.studentName }} | Fecha: {{ result.date }}</div>
+      </div>
+    </div>
+
+    <h3 class="review-heading">Detalle de Respuestas</h3>
+
+    @for (a of result.answers; track a.questionId; let i = $index) {
+      <div class="card answer-card" [class.correct]="a.isCorrect" [class.incorrect]="!a.isCorrect">
+        <div class="card-content answer-content">
+          <div class="answer-header">
+            @if (a.isCorrect) {
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            }
+            <span class="answer-text">{{ i + 1 }}. {{ a.questionText }}</span>
+          </div>
+          @if (!a.isCorrect) {
+            <div class="answer-detail">
+              <span class="wrong-answer">Tu respuesta: {{ a.selectedAnswer || 'Sin responder' }}</span>
+              <span class="right-answer">Respuesta correcta: {{ a.correctAnswer }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="review-actions">
+      <button class="btn btn-outline" (click)="restart()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+        Realizar Nuevo Examen
+      </button>
+    </div>
+  </div>
+}

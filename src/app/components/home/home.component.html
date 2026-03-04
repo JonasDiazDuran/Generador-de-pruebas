@@ -1,0 +1,48 @@
+<div class="home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+      Plataforma de evaluacion academica
+    </div>
+
+    <h1 class="hero-title">Genera examenes aleatorios en segundos</h1>
+
+    <p class="hero-desc">
+      Selecciona 100 preguntas de un banco de 300, con respuestas mezcladas automaticamente.
+      Califica al instante y exporta los resultados a Excel.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" (click)="navigate.emit('exam')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+        Iniciar Examen
+      </button>
+      <button class="btn btn-outline btn-lg" (click)="navigate.emit('bank')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        Ver Banco de Preguntas
+      </button>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    @for (feature of features; track feature.title) {
+      <div class="card feature-card">
+        <div class="feature-icon" [innerHTML]="feature.icon"></div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-desc">{{ feature.description }}</p>
+      </div>
+    }
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-item">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    }
+  </section>
+</div>

@@ -1,0 +1,62 @@
+<div class="bank">
+  <div class="bank-header">
+    <div class="bank-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+    </div>
+    <div>
+      <h2 class="bank-title">Banco de Preguntas</h2>
+      <p class="bank-subtitle">{{ allQuestions.length }} preguntas disponibles</p>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="input search-input" placeholder="Buscar preguntas..." [(ngModel)]="search" (ngModelChange)="page = 0">
+  </div>
+
+  <!-- Categories -->
+  <div class="categories">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    @for (cat of categories; track cat.label; let i = $index) {
+      <span
+        class="badge"
+        [class.badge-default]="selectedCategory === i"
+        [class.badge-outline]="selectedCategory !== i"
+        style="cursor:pointer"
+        (click)="selectedCategory = i; page = 0"
+      >{{ cat.label }}</span>
+    }
+  </div>
+
+  <p class="count-label">Mostrando {{ pageQuestions.length }} de {{ filtered.length }} preguntas</p>
+
+  <!-- Questions -->
+  @for (q of pageQuestions; track q.id) {
+    <div class="card question-item">
+      <div class="card-content q-content">
+        <div class="q-header">
+          <span class="q-id">{{ q.id }}</span>
+          <span class="q-text">{{ q.question }}</span>
+        </div>
+        <div class="q-options">
+          @for (opt of q.options; track opt; let j = $index) {
+            <div class="q-option" [class.correct]="j === q.correctAnswer">
+              <span class="q-opt-letter">{{ getLetter(j) }}.</span>
+              {{ opt }}
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Pagination -->
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="page = page - 1">Anterior</button>
+      <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
+      <button class="btn btn-outline btn-sm" [disabled]="page === totalPages - 1" (click)="page = page + 1">Siguiente</button>
+    </div>
+  }
+</div>

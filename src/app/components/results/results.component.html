@@ -1,0 +1,101 @@
+@if ((results$ | async)?.length === 0) {
+  <div class="empty">
+    <div class="empty-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+    </div>
+    <h2 class="empty-title">Sin Resultados</h2>
+    <p class="empty-desc">Aun no se ha completado ningun examen. Los resultados apareceran aqui una vez que alguien finalice un examen.</p>
+  </div>
+} @else {
+  <div class="results">
+    <!-- Header -->
+    <div class="results-header">
+      <div class="results-header-left">
+        <div class="results-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>
+        </div>
+        <div>
+          <h2 class="results-title">Resultados de Examenes</h2>
+          <p class="results-subtitle">{{ (results$ | async)?.length }} examen(es) completado(s)</p>
+        </div>
+      </div>
+      <div class="results-actions">
+        <button class="btn btn-primary" (click)="exportAll()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+          Exportar Todo a Excel
+        </button>
+        <button class="btn btn-outline btn-icon" (click)="clearResults()" aria-label="Borrar resultados">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      @for (stat of getStats(); track stat.label) {
+        <div class="card stat-card">
+          <span class="stat-value">{{ stat.value }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Results list -->
+    @for (result of results$ | async; track result.id) {
+      <div class="card result-card">
+        <div class="result-header" (click)="toggleExpand(result.id)">
+          <div class="result-left">
+            <div class="result-pct" [class.passing]="result.percentage >= 60" [class.failing]="result.percentage < 60">
+              {{ result.percentage }}%
+            </div>
+            <div class="result-info">
+              <span class="result-name">{{ result.studentName }}</span>
+              <span class="result-date">{{ result.date }}</span>
+            </div>
+          </div>
+          <div class="result-right">
+            <span class="badge" [class.badge-default]="result.percentage >= 60" [class.badge-destructive]="result.percentage < 60">
+              {{ result.percentage >= 60 ? 'Aprobado' : 'Reprobado' }}
+            </span>
+            <span class="result-score">{{ result.score }}/{{ result.totalQuestions }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              @if (expandedId === result.id) {
+                <path d="m18 15-6-6-6 6"/>
+              } @else {
+                <path d="m6 9 6 6 6-6"/>
+              }
+            </svg>
+          </div>
+        </div>
+
+        @if (expandedId === result.id) {
+          <div class="result-detail">
+            <div class="detail-actions">
+              <button class="btn btn-outline btn-sm" (click)="exportSingle(result); $event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar Excel
+              </button>
+            </div>
+            <div class="detail-list">
+              @for (a of result.answers; track a.questionId; let i = $index) {
+                <div class="detail-item" [class.correct]="a.isCorrect" [class.incorrect]="!a.isCorrect">
+                  @if (a.isCorrect) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                  }
+                  <div class="detail-text">
+                    <span>{{ i + 1 }}. {{ a.questionText }}</span>
+                    @if (!a.isCorrect) {
+                      <span class="detail-sub">Respuesta: {{ a.selectedAnswer || 'Sin responder' }} | Correcta: {{ a.correctAnswer }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

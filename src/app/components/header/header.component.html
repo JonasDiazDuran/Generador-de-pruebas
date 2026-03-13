@@ -1,4 +1,4 @@
-<header class="header">
+<header class="header" *ngIf="loginService.rol!=''">
   <div class="header-inner">
     <button class="logo-btn" (click)="navigate.emit('home')">
       <div class="logo-icon">
@@ -9,8 +9,8 @@
         <span class="logo-subtitle">Generador de Examenes</span>
       </div>
     </button>
-
-    <nav class="nav-desktop hide-mobile">
+<div>
+    <nav class="nav-desktop hide-mobile" >
       @for (item of navItems; track item.view) {
         <button
           class="btn"
@@ -36,4 +36,6 @@
       }
     </nav>
   </div>
+</div>
 </header>
+

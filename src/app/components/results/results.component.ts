@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ExamResult } from '../../models/types';
+import { ExamResult, ServiceResponse } from '../../models/types';
 import { ExamService } from '../../services/exam.service';
 import { ExcelExportService } from '../../services/excel-export.service';
 import { ToastService } from '../../services/toast.service';
@@ -12,13 +12,25 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './results.component.html',
   styleUrl: './results.component.css',
 })
-export class ResultsComponent {
+export class ResultsComponent implements OnInit {
+  ngOnInit(): void {
+   this.getAllResult();
+  
+  }
+
+
+
   private examService = inject(ExamService);
   private excelService = inject(ExcelExportService);
   private toastService = inject(ToastService);
 
+
+
+  
   results$ = this.examService.getResults();
   expandedId: string | null = null;
+
+  examResultList :  ExamResult []=[];
 
   toggleExpand(id: string) {
     this.expandedId = this.expandedId === id ? null : id;
@@ -36,12 +48,16 @@ export class ResultsComponent {
   }
 
   exportAll() {
-    const results = this.examService.getResultsValue();
-    if (results.length === 0) {
-      this.toastService.error('No hay resultados para exportar');
-      return;
-    }
-    this.excelService.exportResults(results);
+    alert('me ejecutto')
+    // const results = this.examService.getResultsValue();
+    // if (results.length === 0) {
+    //   this.toastService.error('No hay resultados para exportar');
+    //   return;
+    // }
+    // console.log(results)
+    // this.excelService.exportResults(results);
+        this.excelService.exportResults(this.examResultList);
+
     this.toastService.success('Archivo Excel descargado');
   }
 
@@ -53,5 +69,12 @@ export class ResultsComponent {
   clearResults() {
     this.examService.clearResults();
     this.toastService.info('Resultados eliminados');
+  }
+
+  getAllResult(){
+    this.examService.filterExam({filert : "", isFilter : false}).subscribe((response : ServiceResponse)=>{
+      if(response.status){
+        this.examResultList =response.data;      }
+    })
   }
 }

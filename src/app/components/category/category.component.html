@@ -1,0 +1,143 @@
+<div class="bank">
+
+    <div class="bank-header">
+        <div class="bank-header">
+            <div class="bank-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="bank-title">Programas</h2>
+                <p class="bank-subtitle">Aqui puedes categorizar las preguntas por prgrama.</p>
+            </div>
+        </div>
+        <div>
+            <button class="badge badge-default" data-bs-toggle="modal" data-bs-target="#exampleModal">
+               + Agregar
+            </button>
+
+
+        </div>
+    </div>
+
+
+
+    <!-- Search -->
+    <div class="search-box">
+        <form [formGroup]="formFilter">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input formControlName="filter" type="text" (input)="getFilter($event)" class="input search-input" placeholder="Escribe el nombre de la categoría y presiona Enter">
+    </form>
+    </div>
+
+    <table class="table">
+        <!-- <caption>Listado de categorias</caption> -->
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of listCategory">
+                <th scope="row">{{c.id}}</th>
+                <td>{{c.name}}</td>
+                <td>
+
+                    <button (click)="generateLink(c.id)" class="badge badge-success  me-1" data-bs-toggle="modal" data-bs-target="#linkModal">
+                        Generar enlace
+                      </button>
+
+                  
+
+                    <button (click)="edit(c)" type="button" class="badge badge-success  me-1"
+                        data-bs-target="#exampleModal" data-bs-toggle="modal" data-bs-target="#exampleModal">Editar</button>
+                    <button (click)="delete(c.id)" type="button" class="badge  badge-destructive ">Eliminar</button>
+                   
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div   data-bs-backdrop="static"  class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form [formGroup]="myForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Nombre</label>
+                            <input  formControlName="name" type="email" class="form-control" id="exampleInputEmail1"
+                                aria-describedby="emailHelp" placeholder="Nombre o descripción">
+                        </div>
+                    </div>
+
+                    
+
+                    <div class="modal-footer">
+                        <button type="button" (click)="resetMyForm()" class="badge badge-outline" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" (click)="save()" class="badge badge-default">Agregar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade link-modal" id="linkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content custom-modal">
+  
+        <div class="modal-header border-0">
+          <h5 class="modal-title">🔗 Enlace generado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <div class="modal-body text-center">
+  
+          <p class="message">
+            El enlace ya fue generado.  
+            Ahora puede guardarlo o compartirlo.
+          </p>
+  
+          <div class="link-container">
+            <input 
+             [(ngModel)]="link"
+              type="text" 
+              class="form-control link-input" 
+              readonly
+              #linkInput
+            >
+            <button (click)="copyLink(linkInput)" class="btn btn-primary copy-btn">
+              Copiar
+            </button>
+          </div>
+  
+        </div>
+  
+        <div class="modal-footer border-0 justify-content-center">
+     
+  
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Cerrar
+          </button>
+        </div>
+  
+      </div>
+    </div>
+  </div>

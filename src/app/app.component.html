@@ -10,6 +10,9 @@
       @case ('home') {
         <app-home (navigate)="navigateTo($event)"></app-home>
       }
+      @case('category'){
+        <app-category></app-category>
+      }
       @case ('exam') {
         <app-exam (complete)="onExamComplete($event)"></app-exam>
       }

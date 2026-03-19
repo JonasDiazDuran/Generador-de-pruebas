@@ -79,7 +79,6 @@ export class ExamComponent implements OnInit {
 
  async startExam() {
     const isValid = await this.chekIdentity(this.studentForm.value.cedula, this.studentForm.value.correo);
-    alert(isValid)
     if (!isValid) {
       Alerts.showError("Ya completaste esta prueba anteriormente con esta cédula y este correo. Solo se permite un intento por persona.");
       return; // 🔥 aquí se detiene TODO el flujo
@@ -219,10 +218,9 @@ export class ExamComponent implements OnInit {
     }
   ngOnInit(): void {
     const url = window.location.pathname;
-    console.log(url);
-    const segments = url.split('/');
-    if (segments[1] === 'exam' && segments[2]) {
-      const id = segments[2];
+    const segments= window.location.hash.replace('#/', '').split('/');    
+    if (segments[0] === 'exam' && segments[1]) {
+      const id = segments[1];
       this.studentForm.patchValue({programa : id})
     }
   }

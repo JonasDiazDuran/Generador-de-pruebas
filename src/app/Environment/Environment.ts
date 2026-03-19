@@ -1,5 +1,6 @@
 export const environment = {
-    apiUrl : "https://localhost:7044/",
+    apiUrlDev : "https://localhost:7044/",
+    apiUrl : "https://generator.isfodosu.edu.do/api/",
     apiIntranetUrl : 'https://intranet.isfodosu.edu.do/api/',
     idSistema : 40
 }

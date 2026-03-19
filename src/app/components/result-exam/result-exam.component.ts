@@ -15,7 +15,6 @@ export class ResultExamComponent implements OnInit {
   @Input() result!: ExamResult;
 
   ngOnInit(): void {
-   console.log(this.result);
    
   }
 

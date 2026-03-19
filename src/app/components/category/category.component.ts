@@ -38,7 +38,6 @@ export class CategoryComponent implements OnInit {
     this.myForm = this.fb.group({
       id: this.fb.control(null),
       name: this.fb.control(null, Validators.required),
-      link : this.fb.control(null, Validators.required),
     });
 
     this.formFilter = this.fb.group({
@@ -73,6 +72,7 @@ export class CategoryComponent implements OnInit {
   insert() {
     this.service.insert(this.myForm.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
+        Alerts.hideLoader();
         Alerts.showSuccess(response.message, 'Éxito');
         this.getAll();
         this.closeModal();
@@ -110,7 +110,6 @@ export class CategoryComponent implements OnInit {
   }
 
   save() {
-
     if (this.myForm.valid) {
       if (this.myForm.value.id == null)
         this.insert();

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
-import { Question, ExamQuestion, ExamResult, IExamQuestion } from '../models/types';
+import { Question, ExamQuestion, ExamResult, IExamQuestion, IRecinto, IQuestionCategory } from '../models/types';
 import questionBank from '../data/question-bank';
 import { environment } from '../Environment/Environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -11,7 +11,7 @@ export class ExamService {
   urlBase = `${environment.apiUrl}Question`;
   private toastService = inject(ToastService);
 
-  private results$ = new BehaviorSubject<ExamResult[]>([]);
+  public results$ = new BehaviorSubject<ExamResult[]>([]);
   constructor(private http: HttpClient) { }
 
   private manejarError(error: HttpErrorResponse) {
@@ -20,7 +20,9 @@ export class ExamService {
   }
   getResults() {
     return this.results$.asObservable();
+    
   }
+  
 
   getResultsValue(): ExamResult[] {
     return this.results$.value;
@@ -30,6 +32,10 @@ export class ExamService {
     return questionBank;
   }
 
+
+  setResults(data: ExamResult[]) {
+    this.results$.next(data);
+  }
   generateExam(numQuestions: number = 100): ExamQuestion[] {
     const selectedQuestions = this.shuffleArray(questionBank).slice(0, numQuestions);
 
@@ -54,9 +60,9 @@ export class ExamService {
     sex : string,
     age : number,
     idRecinto :  number,
-    recintoName : string,
+    // recintoObj : IRecinto,
     idCategoria : number,
-    categoriaName :  string,
+    // categoriaobj :  IQuestionCategory,
     cedula : string
 
   ): ExamResult {
@@ -86,9 +92,9 @@ export class ExamService {
 
     const result: ExamResult = {
       id: crypto.randomUUID(),
-      studentName,
+      studentName : studentName,
       date: new Date().toLocaleString('es-ES'),
-      score,
+      score : score,
       totalQuestions: questions.length, 
       approved : Math.round((score / questions.length) * 100)>60? true : false,
       percentage: Math.round((score / questions.length) * 100),
@@ -96,10 +102,10 @@ export class ExamService {
       email : email,
       age :  age,
       idCategoria : idCategoria,
-      categoriaName : categoriaName,
+      // categoriaObj : categoriaobj,
       cedula : cedula,
       idRecinto : idRecinto,
-      recintoName : recintoName,
+      // recintoObj : recintoObj,
       answers: detailedAnswers,
 
     };
@@ -141,6 +147,16 @@ export class ExamService {
       ));
   }
 
+
+  deleteResult(id: string): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}exam/${id}`)
+      .pipe(catchError(
+        err => this.manejarError(err)
+      ));
+  }
+
+  
+
   getById(id: number): Observable<any> {
     return this.http.get(`${this.urlBase}/${id}`)
       .pipe(catchError(err => this.manejarError(err)));
@@ -163,6 +179,11 @@ export class ExamService {
   }
   getAllRecintos(): Observable<any> {
     return this.http.get(`${environment.apiUrl}Exam/recintos`)
+      .pipe(catchError(err => this.manejarError(err)));
+  }
+
+  checkIdentity(cedula : string, correo : string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}Exam/check_identity/${cedula}/${correo}`)
       .pipe(catchError(err => this.manejarError(err)));
   }
 }

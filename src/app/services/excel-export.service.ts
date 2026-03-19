@@ -5,7 +5,8 @@ import { ExamResult } from '../models/types';
 @Injectable({ providedIn: 'root' })
 export class ExcelExportService {
   exportResults(results: ExamResult[]) {
-
+    console.log(results);
+    
     const summaryData = results.map((r, index) => ({
       '#': index + 1,
       'Nombre': r.studentName,
@@ -13,8 +14,8 @@ export class ExcelExportService {
       'Cedula' : r.cedula,
       'Gegero' : r.sex,
       'Edad' : r.age,
-      'Recinto' : r.recintoName,
-      'Programa' : r.categoriaName,
+      'Recinto' : r.recintoObj.nombre,
+      'Programa' : r.categoriaObJ.name,
       'Fecha': r.date,
       'Preguntas Correctas': r.score,
       'Total Preguntas': r.totalQuestions,

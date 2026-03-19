@@ -13,7 +13,9 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { LoginService } from './services/login.service';
 import { environment } from './Environment/Environment';
-
+import { initAlerts } from './helpers/alerts';
+import { ResultExamComponent } from './components/result-exam/result-exam.component';
+  
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -25,7 +27,8 @@ import { environment } from './Environment/Environment';
     BankComponent,
     ResultsComponent,
     ToastComponent,
-    CategoryComponent
+    CategoryComponent,
+    ResultExamComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -43,12 +46,16 @@ export class AppComponent implements OnInit {
   currentView: AppView = 'category';
   results$ = this.examService.getResults();
   tokenUrl: any;
+  selectedResult!: ExamResult;
+
 
   ngOnInit(): void {
+    initAlerts(this.toastr);
 
     this.getToken();
     this.checkLogin();
     this.goToExam();
+    
 
   }
 
@@ -71,9 +78,13 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/exam'])
   }
 
-  onExamComplete(_result: ExamResult) {
-    this.currentView = 'results';
+  onExamComplete(_result: ExamResult) {    
+    this.selectedResult = _result;
+    this.currentView = 'examResult';
+
   }
+
+  
 
   checkLogin() {
 
@@ -121,14 +132,10 @@ export class AppComponent implements OnInit {
   }
 
   login() {
-
     if (!this.tokenUrl) return;
-
     this.loginService.login(this.tokenUrl, environment.idSistema)
       .subscribe((data: any) => {
-
         if (data.success) {
-
           sessionStorage.setItem('usuario', JSON.stringify(data.data));
           sessionStorage.setItem('token', this.tokenUrl);
           sessionStorage.setItem('idPersona', data.data.idPersona);

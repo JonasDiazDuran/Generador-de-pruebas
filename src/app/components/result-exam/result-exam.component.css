@@ -1,0 +1,104 @@
+.card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .title {
+    font-size: 18px;
+    color: #6b7280;
+    margin-bottom: 10px;
+  }
+
+  .score {
+    font-size: 60px;
+    font-weight: bold;
+    color: #2563eb;
+    margin: 10px 0;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .approved {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .failed {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .progress-bar {
+    margin-top: 20px;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress {
+    height: 100%;
+    background: #2563eb;
+    width: 0%; /* dinámico */
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #f5f7fb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+  }
+
+  .message {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 20px;
+  }
+
+  .highlight {
+    background: #eef2ff;
+    color: #2563eb;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

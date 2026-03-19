@@ -48,8 +48,8 @@ export class BankComponent implements OnInit {
   selectedCategory = 0;
   page = 0;
   ITEMS_PER_PAGE = 20;
-  selectCategory(){
-    this.formFilter.patchValue({idCategoria : this.selectedCategory})
+  selectCategory(id : number){
+    this.formFilter.patchValue({idCategoria : id, isFilter : true})
     this.getAll();
   }
   // categories: Category[] = [
@@ -122,11 +122,18 @@ export class BankComponent implements OnInit {
     this.getAll();
   }
 
+  showAll(){
+    this.formFilter.patchValue({isFilter : false})
+    this.getAll();
+  }
+
   
   getAll() {
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
         this.allQuestions = response.data;
+        console.log(response.data);
+        
       }
     });
   }

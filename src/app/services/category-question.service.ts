@@ -17,8 +17,12 @@ export class CategoryQuestionService {
   constructor(private http: HttpClient) { }
 
   private manejarError(error: HttpErrorResponse) {
-    Alerts.showError('No se puede eliminar este registro porque está siendo utilizado.')
-    return throwError(() => error );
+
+    if (error.status >= 400) {
+      Alerts.showError('No se puede eliminar este registro porque está siendo utilizado.');
+    }
+
+    return throwError(() => error);
   }
 
   insert(form: any): Observable<any> {
@@ -41,7 +45,7 @@ export class CategoryQuestionService {
       .pipe(catchError(err => this.manejarError(err)));
   }
 
-  filter(form: any) : Observable<any> {
+  filter(form: any): Observable<any> {
     return this.http.post(`${this.urlBase}/filter`, form)
       .pipe(catchError(err => this.manejarError(err)));
   }

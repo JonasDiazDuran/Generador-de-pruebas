@@ -13,9 +13,13 @@
       @case('category'){
         <app-category></app-category>
       }
-      @case ('exam') {
-        <app-exam (complete)="onExamComplete($event)"></app-exam>
+      @case('examResult'){
+        <app-result-exam [result]="selectedResult"></app-result-exam>
       }
+      @case ('exam') {
+        <app-exam  (complete)="onExamComplete($event)"></app-exam>
+      }
+     
       @case ('bank') {
         <app-bank></app-bank>
       }

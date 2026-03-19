@@ -8,6 +8,7 @@ import { ImportHelper } from '../../helpers/importHelper';
 import * as Alerts from '../../helpers/alerts';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 type ExamPhase = 'setup' | 'taking' | 'review';
 
@@ -36,6 +37,8 @@ export class ExamComponent implements OnInit {
   programa=0;
   recintoName : string="";
   categoriaName : string = "";
+  recintoObj! : IRecinto;
+  categoriaObj! : IQuestionCategory;
 
 
   recintosList :  IRecinto[]=[];
@@ -74,7 +77,13 @@ export class ExamComponent implements OnInit {
     return String.fromCharCode(65 + idx);
   }
 
-  startExam() {
+ async startExam() {
+    const isValid = await this.chekIdentity(this.studentForm.value.cedula, this.studentForm.value.correo);
+    alert(isValid)
+    if (!isValid) {
+      Alerts.showError("Ya completaste esta prueba anteriormente con esta cédula y este correo. Solo se permite un intento por persona.");
+      return; // 🔥 aquí se detiene TODO el flujo
+    }
     // if (!this.studentName.trim()) {
     //   this.toastService.error('Por favor ingresa tu nombre');
     //   return;
@@ -127,12 +136,10 @@ export class ExamComponent implements OnInit {
   }
 
   submitExam() {
-
     if (this.answeredCount < this.questions.length) {
       const unanswered = this.questions.length - this.answeredCount;
       this.toastService.warning(`Tienes ${unanswered} preguntas sin responder.`);
     }
-  
     this.result = this.examService.gradeExam(
       this.questions,
       this.answers,
@@ -141,27 +148,34 @@ export class ExamComponent implements OnInit {
       this.genero,
       this.edad,
       this.recinto,
-      this.recintoName,
       this.programa,
-      this.categoriaName,
       this.cedula
     );
-  
     this.examService.createExam(this.result).subscribe((response: ServiceResponse) => {
       if (response.status) {
         Alerts.showSuccess(response.message);
         this.complete.emit(this.result!);
         this.phase = 'review';
         this.toastService.success(`Examen completado: ${this.result!.percentage}%`);
-      }
-  
-    
+      }  
     });
-  
   }
 
+  async chekIdentity(cedula: string, correo: string): Promise<boolean> {
+    try {
+      const response: ServiceResponse = await firstValueFrom(
+        this.examService.checkIdentity(cedula, correo)
+      );
+  
+      return response.status;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 
   restart() {
+
     this.phase = 'setup';
     this.studentName = '';
     this.questions = [];

@@ -1,8 +1,9 @@
 // alerts.ts
-import { ToastrService } from 'ngx-toastr';
+import { ToastrService, ActiveToast } from 'ngx-toastr';
 
 // Creamos un ToastrService "temporal" para usarlo dentro de las funciones
 let toastr: ToastrService;
+let loaderToast: ActiveToast<any> | null = null;
 
 export function initAlerts(toastrInstance: ToastrService) {
   toastr = toastrInstance;
@@ -24,7 +25,22 @@ export function showWarning(message: string, title?: string) {
   toastr?.warning(message, title);
 }
 
-export function showConfirmDelete(message: string): boolean {
-    // Solo muestra la pregunta y devuelve true o false según la respuesta del usuario
-    return window.confirm(message);
+// LOADER
+export function ShowLoader(message: string = 'Cargando...', title?: string) {
+  loaderToast = toastr?.info(message, title, {
+    disableTimeOut: true,
+    closeButton: false,
+    tapToDismiss: false
+  }) || null;
+}
+
+export function hideLoader() {
+  if (loaderToast) {
+    toastr.clear(loaderToast.toastId);
+    loaderToast = null;
   }
+}
+
+export function showConfirmDelete(message: string): boolean {
+  return window.confirm(message);
+}

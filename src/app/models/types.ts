@@ -49,10 +49,10 @@ export interface ExamResult {
   email : string;
   age : number;
   idCategoria : number;
-  categoriaName : string;
+  categoriaObJ? : any;
   cedula : string;
   idRecinto : number;
-  recintoName : string;
+  recintoObj? : any;
   answers: DetailedAnswer[];
 }
 
@@ -83,4 +83,4 @@ export interface IRecinto {
   latitud: string;
 }
 
-export type AppView = 'home' | 'category' | 'exam' | 'results' | 'bank';
+export type AppView = 'home' | 'category' | 'examResult' |  'exam' | 'results' | 'bank';

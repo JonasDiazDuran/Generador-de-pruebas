@@ -5,6 +5,7 @@ export interface IQuestionCategory {
 
 
 export interface IQuestionOption {
+  id : number;
   optionText: string;
   isCorrect: boolean;
   urlImage: string;
@@ -37,6 +38,11 @@ export interface IExamQuestion extends IQuestion {
   shuffledCorrectAnswer: number;
 }
 
+export interface iAnswrsPos{
+  idQuestion : number;
+  idSelectedOption : number;
+  isCorrect : boolean;
+}
 export interface ExamResult {
   id: string;
   studentName: string;
@@ -54,9 +60,17 @@ export interface ExamResult {
   idRecinto : number;
   recintoObj? : any;
   answers: DetailedAnswer[];
+  answersForSave? : iAnswrsPos[];
+  
 }
 
-export interface DetailedAnswer {
+export interface IWrongAnswers  extends IQuestion{
+  question :  IQuestion;
+  cantTest : number;
+  cantWrongAnswer : number;
+}
+
+export interface  DetailedAnswer {
   questionId: number;
   questionText: string;
   selectedAnswer: string | null;

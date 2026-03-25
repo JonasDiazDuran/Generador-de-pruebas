@@ -51,19 +51,26 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     initAlerts(this.toastr);
 
-    this.getToken();     // 👈 primero obtiene token
-    this.checkLogin();   // 👈 luego valida acceso
-    this.goToExam();     // 👈 navega si viene a examen
+    this.handleRoute(); // 👈 ejecutar al inicio
+
+    // this.getToken();     // 👈 primero obtiene token
+    // this.checkLogin();   // 👈 luego valida acceso
+    // this.goToExam();     // 👈 navega si viene a examen
+
+    window.addEventListener('hashchange', () => {
+      this.handleRoute(); // 👈 ejecutar cuando cambie la URL
+    });
   }
 
   // 🔥 helper para leer hash correctamente
   private getSegments(): string[] {
+    console.log(window.location.hash.replace('#/', '').split('/'));
     return window.location.hash.replace('#/', '').split('/');
   }
 
   goToExam() {
     const segments = this.getSegments();
-
+    
     if (segments[0] === 'exam' && segments[1]) {
       this.currentView = 'exam';
     }
@@ -80,6 +87,7 @@ export class AppComponent implements OnInit {
   }
 
   checkLogin() {
+    
     const segments = this.getSegments();
     const route = segments[0];
     const token = sessionStorage.getItem('token');
@@ -89,8 +97,8 @@ export class AppComponent implements OnInit {
       window.location.href = 'https://intranet.isfodosu.edu.do';
       return;
     }
-
     // 🔥 si viene desde login con token
+
     if (route === 'login' && this.tokenUrl) {
       this.login();
     }
@@ -113,6 +121,7 @@ export class AppComponent implements OnInit {
       this.tokenUrl = token;
       this.loginService.rol = this.loginService.getRol(this.tokenUrl);
     }
+
   }
 
   login() {
@@ -141,10 +150,17 @@ export class AppComponent implements OnInit {
           // 🔥 cambiar vista en vez de usar router
           this.currentView = 'category';
           this.router.navigate([''])
+        }
+        else{
+          window.location.href = 'https://intranet.isfodosu.edu.do';
 
-          
-          
         }
       });
+  }
+
+  handleRoute() {
+    this.getToken();
+    this.checkLogin();
+    this.goToExam();
   }
 }

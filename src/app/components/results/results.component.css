@@ -55,6 +55,13 @@
   gap: 0.75rem;
 }
 
+.results-header-right {
+  display: flex;
+  align-items: right;
+  gap: 0.75rem;
+  border: 1px solid red;
+}
+
 .results-icon {
   display: flex;
   align-items: center;
@@ -79,8 +86,11 @@
 
 .results-actions {
   display: flex;
-  align-items: center;
+  /* align-items: end; */
+  justify-content: end;
   gap: 0.5rem;
+  /* border: 1px solid red; */
+  width: 100%;
 }
 
 /* ===== STATS GRID ===== */

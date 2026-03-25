@@ -239,7 +239,7 @@
     </div>
     <div class="options">
       @for (option of q.questionOptions; track option; let optIdx = $index) {
-      <button class="option-btn" [class.selected]="answers[q.id] === optIdx" (click)="selectAnswer(q.id, optIdx)">
+      <button class="option-btn" [class.selected]="answers[q.id] === optIdx" (click)="selectAnswer(q.id, optIdx, option)">
         <span class="option-letter" [class.selected]="answers[q.id] === optIdx">
           {{ getLetter(optIdx) }}
         </span>

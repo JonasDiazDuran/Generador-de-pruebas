@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { ExamQuestion, ExamResult, IExamQuestion, IQuestionCategory, IRecinto, ServiceResponse } from '../../models/types';
+import { ExamQuestion, ExamResult, IExamQuestion, IQuestion, IQuestionCategory, IQuestionOption, IRecinto, ServiceResponse, iAnswrsPos } from '../../models/types';
 import { ExamService } from '../../services/exam.service';
 import { ToastService } from '../../services/toast.service';
 import { ImportHelper } from '../../helpers/importHelper';
@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 type ExamPhase = 'setup' | 'taking' | 'review';
+
 
 @Component({
   selector: 'app-exam',
@@ -46,6 +47,7 @@ export class ExamComponent implements OnInit {
 
   questions: IExamQuestion[] = [];
   answers: Record<number, number | null> = {};
+  answersForPost : iAnswrsPos[]=[];
   currentPage = 0;
   result: ExamResult | null = null;
 
@@ -122,8 +124,21 @@ export class ExamComponent implements OnInit {
     this.toastService.success('Examen generado con 100 preguntas aleatorias');
   }
 
-  selectAnswer(questionId: number, optionIndex: number) {
+  selectAnswer(questionId: number, optionIndex: number, option : IQuestionOption) {
     this.answers = { ...this.answers, [questionId]: optionIndex };
+    let question = this.answersForPost.find(c=>c.idQuestion);
+    if(this.answersForPost.find(c=>c.idQuestion==questionId)!=undefined){
+      this.answersForPost = this.answersForPost.filter(c=>c.idQuestion!==questionId)
+    } 
+
+    this.answersForPost.push({
+      idQuestion : questionId,
+      idSelectedOption : option.id,
+      isCorrect : option.isCorrect
+    })
+
+    console.log(this.answersForPost);
+    
   }
 
   prevPage() {
@@ -150,6 +165,9 @@ export class ExamComponent implements OnInit {
       this.programa,
       this.cedula
     );
+    this.result.answersForSave = this.answersForPost;
+    
+    
     this.examService.createExam(this.result).subscribe((response: ServiceResponse) => {
       if (response.status) {
         Alerts.showSuccess(response.message);

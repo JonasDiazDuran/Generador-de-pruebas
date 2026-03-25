@@ -72,8 +72,6 @@ export class ResultsComponent implements OnInit {
     ];
   }
   selectCategory(id : number){
-    console.log(id);
-    
     this.formFilter.patchValue({idCategoria : id, isFilter : true})
     this.getAllResult();
   }
@@ -92,6 +90,14 @@ export class ResultsComponent implements OnInit {
     this.toastService.success('Archivo Excel descargado');
   }
 
+
+  exportAllWrongAnswers(){
+    this.examService.reportWrongAnswrs(this.formFilter.value.idCategoria==null? 0 : this.formFilter.value.idCategoria).subscribe((response : ServiceResponse)=>{
+      if(response.status){
+        this.excelService.exportResultsWrongAnswers(response.data);
+      }
+    })
+  }
   
   //Delete method
   delete(id: any) {
@@ -100,6 +106,23 @@ export class ResultsComponent implements OnInit {
     );
     if (confirmed) {
       this.examService.deleteResult(id).subscribe((response: ServiceResponse) => {
+        if (response.status) {
+          Alerts.showSuccess(response.message, 'Éxito');
+          // this.closeModal();
+          this.getAllResult();
+        } else {
+          Alerts.showError(response.message, 'Error');
+        }
+      })
+    }
+  }
+
+  deleteAll() {
+    const confirmed = Alerts.showConfirmDelete(
+      '¿Estás seguro que quieres eliminar esta categoría?'
+    );
+    if (confirmed) {
+      this.examService.deleteResultAll().subscribe((response: ServiceResponse) => {
         if (response.status) {
           Alerts.showSuccess(response.message, 'Éxito');
           // this.closeModal();

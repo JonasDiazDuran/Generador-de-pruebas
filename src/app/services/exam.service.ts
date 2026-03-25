@@ -66,7 +66,6 @@ export class ExamService {
     cedula : string
 
   ): ExamResult {
-
     let score = 0;
     const detailedAnswers = questions.map((q) => {
       const selectedIndex = answers[q.id];
@@ -76,7 +75,6 @@ export class ExamService {
 
       //     shuffledOptions: string[];
       // shuffledCorrectAnswer: number;
-
 
       return {
         questionId: q.id,
@@ -96,7 +94,7 @@ export class ExamService {
       date: new Date().toLocaleString('es-ES'),
       score : score,
       totalQuestions: questions.length, 
-      approved : Math.round((score / questions.length) * 100)>60? true : false,
+      approved : Math.round((score / questions.length) * 100)>70? true : false,
       percentage: Math.round((score / questions.length) * 100),
       sex : sex,
       email : email,
@@ -155,6 +153,19 @@ export class ExamService {
       ));
   }
 
+  deleteResultAll(): Observable<any> {
+    return this.http.delete(`${environment.apiUrl}exam/delete_all`)
+      .pipe(catchError(
+        err => this.manejarError(err)
+      ));
+  }
+
+  reportWrongAnswrs(idCategory : number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}exam/report_wrong_answers?idCategory=${idCategory}`)
+      .pipe(catchError(
+        err => this.manejarError(err)
+      ));
+  }
   
 
   getById(id: number): Observable<any> {

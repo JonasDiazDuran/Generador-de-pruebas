@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app/app.routes';
 import { provideHttpClient } from '@angular/common/http';
@@ -12,7 +12,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(), // 👈 reemplaza HttpClientModule
-    provideToastr()
-
+    provideToastr(),
+    provideRouter(routes, withHashLocation())
   ],
 }).catch((err) => console.error(err));

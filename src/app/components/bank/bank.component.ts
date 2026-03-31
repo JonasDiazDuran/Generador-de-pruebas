@@ -24,32 +24,54 @@ export class BankComponent implements OnInit {
 
   myForm!: FormGroup;
   formFilter!: FormGroup;
-  constructor(private categoryService : CategoryQuestionService, private fb : FormBuilder){
+  formData = new FormData();
+  imageUrl: string | ArrayBuffer | null = null;
+  selectedFile: File | undefined;
+
+
+  constructor(private categoryService: CategoryQuestionService, private fb: FormBuilder) {
 
   }
 
-  
-  getAllCategory(){
-    this.categoryService.filter({filter : "", isFilter : false}).subscribe((response : ServiceResponse)=>{
-      if(response.status){
+
+
+
+  getAllCategory() {
+    this.categoryService.filter({ filter: "", isFilter: false }).subscribe((response: ServiceResponse) => {
+      if (response.status) {
         this.categories = response.data;
       }
-      
+
     })
   }
 
+  onFileSelected(event: any) {
+    this.formData.append('image', (event.target.files[0] as File))
+    this.selectedFile = event.target.files[0] as File;
+    this.previewImage();
+  }
+
+  previewImage() {
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.readAsDataURL(this.selectedFile);
+      reader.onload = () => {
+        this.imageUrl = reader.result;
+      };
+    }
+  }
   private examService = inject(ExamService);
 
   // allQuestions: Question[] = this.examService.getQuestionBank();
- allQuestions: IQuestion[] = [];
+  allQuestions: IQuestion[] = [];
 
 
   search = '';
   selectedCategory = 0;
   page = 0;
   ITEMS_PER_PAGE = 20;
-  selectCategory(id : number){
-    this.formFilter.patchValue({idCategoria : id, isFilter : true})
+  selectCategory(id: number) {
+    this.formFilter.patchValue({ idCategoria: id, isFilter: true })
     this.getAll();
   }
   // categories: Category[] = [
@@ -62,7 +84,7 @@ export class BankComponent implements OnInit {
   //   { label: 'Tecnologia', range: [251, 300] },
   // ];
 
-   categories: IQuestionCategory[] = [
+  categories: IQuestionCategory[] = [
     // { label: 'Todas', range: [1, 300] },
     // { label: 'Ciencias Naturales', range: [1, 50] },
     // { label: 'Matematicas', range: [51, 100] },
@@ -96,7 +118,7 @@ export class BankComponent implements OnInit {
   //   return this.filtered.slice(this.page * this.ITEMS_PER_PAGE, (this.page + 1) * this.ITEMS_PER_PAGE);
   // }
 
-   get pageQuestions(): IQuestion[] {
+  get pageQuestions(): IQuestion[] {
     // return this.filtered.slice(this.page * this.ITEMS_PER_PAGE, (this.page + 1) * this.ITEMS_PER_PAGE);
     return this.allQuestions;
   }
@@ -107,7 +129,7 @@ export class BankComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-   this.getAllCategory();
+    this.getAllCategory();
     this.myForm = this.fb.group({
       id: this.fb.control(null),
       name: this.fb.control(null, Validators.required),
@@ -116,47 +138,49 @@ export class BankComponent implements OnInit {
     this.formFilter = this.fb.group({
       filter: [""],
       isFilter: [false],
-      idCategoria : [null]
+      idCategoria: [null]
     });
 
     this.getAll();
   }
 
-  showAll(){
-    this.formFilter.patchValue({isFilter : false})
+  showAll() {
+    this.formFilter.patchValue({ isFilter: false })
     this.getAll();
   }
 
-  
+
   getAll() {
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
         this.allQuestions = response.data;
         console.log(response.data);
-        
+
       }
     });
   }
 
-  getFilter(event : any){
-    this.formFilter.patchValue({isFilter : true})
+  getFilter(event: any) {
+    this.formFilter.patchValue({ isFilter: true })
     this.getAll()
   }
 
   edit(question: IQuestion) {
-    question.questionOptions.forEach(c=>{
+    question.questionOptions.forEach(c => {
       this.addOption()
     })
     this.questionForm.reset(question)
-   
+    this.imageUrl = question.img;
+
   }
   resetMyForm() {
     this.myForm.reset();
+    this.imageUrl = null;
   }
   //Insert method
   insert() {
 
-    this.examService.insert(this.questionForm.value).subscribe((response: ServiceResponse) => {
+    this.examService.insert(this.formData).subscribe((response: ServiceResponse) => {
       if (response.status) {
         Alerts.showSuccess(response.message, 'Éxito');
         this.getAll();
@@ -167,7 +191,7 @@ export class BankComponent implements OnInit {
 
   //Update method
   update() {
-    this.examService.update(this.questionForm.value).subscribe((response: ServiceResponse) => {
+    this.examService.update(this.formData).subscribe((response: ServiceResponse) => {
       if (response.status) {
         Alerts.showSuccess(response.message, 'Éxito');
         this.getAll();
@@ -194,14 +218,34 @@ export class BankComponent implements OnInit {
     }
   }
 
-  
+
   save() {
+    console.log( this.questionForm.value);
+    
     if (this.questionForm.valid) {
-      if (this.questionForm.value.id == null)
-      {
+      // Solo agregar id si existe
+      if (this.questionForm.value.id != null) {
+        this.formData.append('id', this.questionForm.value.id .toString());
+      }
+
+      // Evitar null o undefined
+      this.formData.append('questionText',  this.questionForm.value.questionText ?? '');
+
+      // Validar idCategoria antes de usar toString()
+      if ( this.questionForm.value.idCategory != null) {
+        this.formData.append('idCategory',  this.questionForm.value.idCategory.toString());
+      }
+
+      // Asegurar que siempre sea un array válido
+      this.formData.append(
+        'questionOptions',
+        JSON.stringify( this.questionForm.value.questionOptions ?? [])
+      );
+
+      if (this.questionForm.value.id == null) {
         this.insert();
 
-      }else{
+      } else {
         this.update();
 
       }
@@ -230,14 +274,14 @@ export class BankComponent implements OnInit {
 
   private initForm(): void {
     this.questionForm = this.fb.group({
-      id : [null],
+      id: [null],
       questionText: ['', [Validators.required, Validators.minLength(5)]],
       idCategory: [null, Validators.required],
       questionOptions: this.fb.array([], Validators.minLength(2)),
     });
 
     // Agregar dos opciones por defecto
-   
+
   }
 
   get questionOptions(): FormArray {
@@ -264,7 +308,7 @@ export class BankComponent implements OnInit {
 
   hasCorrectOption(): boolean {
     return this.questionOptions.controls.some(
-      (control : any) => control.get('isCorrect')?.value === true
+      (control: any) => control.get('isCorrect')?.value === true
     );
   }
 
@@ -294,6 +338,7 @@ export class BankComponent implements OnInit {
   resetForm(): void {
     this.questionForm.reset();
     this.questionOptions.clear();
+    this.imageUrl=null;
     // this.addOption();
     // this.addOption();
   }
@@ -310,5 +355,5 @@ export class BankComponent implements OnInit {
     return field ? field.invalid && field.touched : false;
   }
 
-  
+
 }

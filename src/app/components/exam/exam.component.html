@@ -7,10 +7,10 @@
       generar su cuestionario de manera correcta.</p>
   </div>
 
- 
-    <div class="card-content setup-form">
 
-      <!-- <label for="studentName" class="label">Nombre del Estudiante</label>
+  <div class="card-content setup-form">
+
+    <!-- <label for="studentName" class="label">Nombre del Estudiante</label>
       <input id="studentName" class="input" placeholder="Ingresa tu nombre completo" [(ngModel)]="studentName">
 
       <label for="studentName" class="label">Correo Electrónico</label>
@@ -46,129 +46,130 @@
         <option value="Prefiero no decirlo">Prefiero no decirlo</option>
       </select> -->
 
-      <div class="container mt-1">
+    <div class="container mt-1">
 
 
-        <div class="card p-4">
+      <div class="card p-4">
 
-          <!-- STEPPER -->
+        <!-- STEPPER -->
 
-          <div class="stepper">
+        <div class="stepper">
 
-            <div class="step" [class.active]="step>=1">
-              <div class="circle">1</div>
-              <span>Datos personales</span>
-            </div>
-
-            <div class="step" [class.active]="step>=2">
-              <div class="circle">2</div>
-              <span>Información adicional</span>
-            </div>
-
-            <div class="step" [class.active]="step>=3">
-              <div class="circle">3</div>
-              <span>Programa</span>
-            </div>
-
+          <div class="step" [class.active]="step>=1">
+            <div class="circle">1</div>
+            <span>Datos personales</span>
           </div>
 
-        <form [formGroup]="studentForm">
+          <div class="step" [class.active]="step>=2">
+            <div class="circle">2</div>
+            <span>Información adicional</span>
+          </div>
 
-<!-- PASO 1 -->
-<div *ngIf="step===1">
-  <div class="mb-3">
-    <label>Nombre del Estudiante</label>
-    <input type="text" class="form-control" formControlName="nombre" placeholder="Ingresa tu nombre completo">
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('nombre')?.invalid">
-      El nombre es obligatorio.
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label>Correo Electrónico</label>
-    <input type="email" class="form-control" formControlName="correo" placeholder="Ingresa tu correo electrónico">
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('correo')?.invalid">
-      Ingresa un correo válido.
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label>Cédula de Identidad y Electoral</label>
-    <input type="text" class="form-control" formControlName="cedula" placeholder="Ingresa tu número de identificación">
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('cedula')?.invalid">
-      La cédula es obligatoria.
-    </div>
-  </div>
-
-  <button class="btn btn-primary" type="button" (click)="next()">Siguiente</button>
-</div>
-
-<!-- PASO 2 -->
-<div *ngIf="step===2">
-  <div class="mb-3">
-    <label>Género</label>
-    <select class="form-select" formControlName="genero">
-      <option value="">Seleccione</option>
-      <option>Femenino</option>
-      <option>Masculino</option>
-      <option>Prefiero no decirlo</option>
-   
-      
-    </select>
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('genero')?.invalid">
-      Selecciona un género.
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label>Edad</label>
-    <input type="number" class="form-control" formControlName="edad" placeholder="Ingresa tu edad">
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('edad')?.invalid">
-      Ingresa una edad válida.
-    </div>
-  </div>
-
-  <div class="mb-3">
-    <label>Recinto</label>
-    <select class="form-select" formControlName="recinto">
-      <option *ngFor="let r of recintosList" [value]="r.idRecinto">{{r.nombre}}</option>
-      
-    </select>
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('recinto')?.invalid">
-      Selecciona un recinto.
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between">
-    <button class="btn btn-secondary" type="button" (click)="previous()">Anterior</button>
-    <button class="btn btn-primary" type="button" (click)="next()">Siguiente</button>
-  </div>
-</div>
-
-<!-- PASO 3 -->
-<div *ngIf="step===3">
-  <div class="mb-3">
-    <label>Programa para el que aplica</label>
-    <select class="form-select readonly-select" formControlName="programa">
-      <option *ngFor="let c of categoriesList" [value]="c.id">{{c.name}}</option>
-    </select>
-    <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('programa')?.invalid">
-      Selecciona un programa.
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between">
-    <button class="btn btn-secondary" type="button" (click)="previous()">Anterior</button>
-    <button class="btn btn-success" type="button" (click)="startExam()">Iniciar prueba</button>
-  </div>
-</div>
-
-</form>
+          <div class="step" [class.active]="step>=3">
+            <div class="circle">3</div>
+            <span>Programa</span>
+          </div>
 
         </div>
 
+        <form [formGroup]="studentForm">
+
+          <!-- PASO 1 -->
+          <div *ngIf="step===1">
+            <div class="mb-3">
+              <label>Nombre del Estudiante</label>
+              <input type="text" class="form-control" formControlName="nombre" placeholder="Ingresa tu nombre completo">
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('nombre')?.invalid">
+                El nombre es obligatorio.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label>Correo Electrónico</label>
+              <input type="email" class="form-control" formControlName="correo"
+                placeholder="Ingresa tu correo electrónico">
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('correo')?.invalid">
+                Ingresa un correo válido.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label>Cédula de Identidad y Electoral</label>
+              <input type="text" class="form-control" formControlName="cedula"
+                placeholder="Ingresa tu número de identificación">
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('cedula')?.invalid">
+                La cédula es obligatoria.
+              </div>
+            </div>
+
+            <button class="btn btn-primary" type="button" (click)="next()">Siguiente</button>
+          </div>
+
+          <!-- PASO 2 -->
+          <div *ngIf="step===2">
+            <div class="mb-3">
+              <label>Género</label>
+              <select class="form-select" formControlName="genero">
+                <option value="">Seleccione</option>
+                <option>Femenino</option>
+                <option>Masculino</option>
+                <option>Prefiero no decirlo</option>
+
+
+              </select>
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('genero')?.invalid">
+                Selecciona un género.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label>Edad</label>
+              <input type="number" class="form-control" formControlName="edad" placeholder="Ingresa tu edad">
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('edad')?.invalid">
+                Ingresa una edad válida.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label>Recinto</label>
+              <select class="form-select" formControlName="recinto">
+                <option *ngFor="let r of recintosList" [value]="r.idRecinto">{{r.nombre}}</option>
+
+              </select>
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('recinto')?.invalid">
+                Selecciona un recinto.
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-secondary" type="button" (click)="previous()">Anterior</button>
+              <button class="btn btn-primary" type="button" (click)="next()">Siguiente</button>
+            </div>
+          </div>
+
+          <!-- PASO 3 -->
+          <div *ngIf="step===3">
+            <div class="mb-3">
+              <label>Programa para el que aplica</label>
+              <select class="form-select readonly-select" formControlName="programa">
+                <option *ngFor="let c of categoriesList" [value]="c.id">{{c.name}}</option>
+              </select>
+              <div class="text-danger mt-1" *ngIf="submitted && studentForm.get('programa')?.invalid">
+                Selecciona un programa.
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-secondary" type="button" (click)="previous()">Anterior</button>
+              <button class="btn btn-success" type="button" (click)="startExam()">Iniciar prueba</button>
+            </div>
+          </div>
+
+        </form>
+
       </div>
 
+    </div>
 
 
 
@@ -178,14 +179,15 @@
 
 
 
-      <!-- <button class="btn btn-primary btn-lg" style="width:100%" (click)="startExam()">
+
+    <!-- <button class="btn btn-primary btn-lg" style="width:100%" (click)="startExam()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
         </svg>
         Generar y Comenzar Examen
       </button> -->
-    </div>
+  </div>
 
 
   <!-- <div class="instructions card">
@@ -237,9 +239,11 @@
       <span class="question-number">{{ currentPage * QUESTIONS_PER_PAGE + idx + 1 }}.</span>
       {{ q.questionText }}
     </div>
+    <img *ngIf="q.img" [src]="q.img" style="max-width: 800px; margin-left: 40px;">
     <div class="options">
       @for (option of q.questionOptions; track option; let optIdx = $index) {
-      <button class="option-btn" [class.selected]="answers[q.id] === optIdx" (click)="selectAnswer(q.id, optIdx, option)">
+      <button class="option-btn" [class.selected]="answers[q.id] === optIdx"
+        (click)="selectAnswer(q.id, optIdx, option)">
         <span class="option-letter" [class.selected]="answers[q.id] === optIdx">
           {{ getLetter(optIdx) }}
         </span>

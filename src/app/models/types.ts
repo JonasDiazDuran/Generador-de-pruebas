@@ -17,6 +17,7 @@ export interface IQuestion {
   idCategory: number;
   correctOption  : number;
   questionOptions: IQuestionOption[];
+  img : string;
 }
 
 

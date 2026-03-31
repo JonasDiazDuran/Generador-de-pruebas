@@ -9,6 +9,8 @@ import * as Alerts from '../../helpers/alerts';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 type ExamPhase = 'setup' | 'taking' | 'review';
 
@@ -110,6 +112,7 @@ export class ExamComponent implements OnInit {
           id : c.id,
           questionText: c.questionText,
           idCategory: c.idCategoria,
+          img : c.img,
           correctOption  : c.correctAnswer,
           questionOptions: c.questionOptions,
           shuffledOptions : c.questionOptions,
@@ -177,6 +180,7 @@ export class ExamComponent implements OnInit {
       }  
     });
   }
+
 
   async chekIdentity(cedula: string, correo: string): Promise<boolean> {
     try {

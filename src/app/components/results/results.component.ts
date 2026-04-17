@@ -38,7 +38,7 @@ export class ResultsComponent implements OnInit {
   }
 
 
-  selectedCategory = 0;
+  selectedCategory = 10;
   page = 0;
 
 
@@ -156,6 +156,7 @@ export class ResultsComponent implements OnInit {
   }
 
   showAll(){
+    this.selectedCategory=10;
     this.formFilter.patchValue({isFilter : false})
     this.getAllResult();
   }

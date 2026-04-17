@@ -67,7 +67,7 @@ export class BankComponent implements OnInit {
 
 
   search = '';
-  selectedCategory = 0;
+  selectedCategory = 10;
   page = 0;
   ITEMS_PER_PAGE = 20;
   selectCategory(id: number) {
@@ -145,6 +145,7 @@ export class BankComponent implements OnInit {
   }
 
   showAll() {
+    this.selectedCategory = 10;
     this.formFilter.patchValue({ isFilter: false })
     this.getAll();
   }
@@ -154,8 +155,6 @@ export class BankComponent implements OnInit {
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
         this.allQuestions = response.data;
-        console.log(response.data);
-
       }
     });
   }

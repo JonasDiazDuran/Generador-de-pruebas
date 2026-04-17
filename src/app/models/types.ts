@@ -11,14 +11,6 @@ export interface IQuestionOption {
   urlImage: string;
 }
 
-export interface IQuestion {
-  id : number,
-  questionText: string;
-  idCategory: number;
-  correctOption  : number;
-  questionOptions: IQuestionOption[];
-  img : string;
-}
 
 
 
@@ -28,6 +20,15 @@ export interface Question {
   options: string[];
   correctAnswer: number;
 }
+export interface IQuestion {
+  id : number,
+  questionText: string;
+  idCategory: number;
+  correctOption  : number;
+  questionOptions: IQuestionOption[];
+  img : string;
+}
+
 
 export interface ExamQuestion extends Question {
   shuffledOptions: string[];

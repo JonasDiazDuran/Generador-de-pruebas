@@ -40,7 +40,9 @@
       stroke="var(--muted-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
     </svg>
-    <button (click)="showAll()" class="badge badge-default">Mostrar todos</button>
+    <button (click)="showAll()" class="badge" [ngClass]="selectedCategory !== 10 ?  'badge-outline' :'badge-default'">
+      Mostrar todos
+    </button>
 
     @for (cat of categories; track cat.name; let i = $index) {
     <span class="badge badge-default" [class.badge-default]="selectedCategory === i"
@@ -50,10 +52,10 @@
     }
   </div>
 
-  <p class="count-label">Mostrando preguntas</p>
-
+  <p class="count-label">{{allQuestions.length}} preguntas</p>
   <!-- Questions -->
   @for (q of allQuestions; track q.id; let i = $index) {
+
   <div class="card question-item">
     <div class="card-content q-content">
       <div class="headerQuestion">
@@ -69,7 +71,7 @@
       </div>
       <img style="max-width: 800px; margin-left: 40px;" *ngIf="q.img!=undefined" [src]="q.img" alt="">
 
-      
+
       <div class="q-options">
         @for (opt of q.questionOptions; track opt; let j = $index) {
         <div class="q-option" [class.correct]="j === q.correctOption">

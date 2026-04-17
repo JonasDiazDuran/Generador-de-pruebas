@@ -233,6 +233,7 @@
   </div>
 
   <!-- Questions -->
+  @if (phase === 'taking' && questions!=undefined && questions.length>0) {
   @for (q of currentQuestions; track q.id; let idx = $index) {
   <div class="card question-card">
     <div class="question-header">
@@ -242,9 +243,9 @@
     <img *ngIf="q.img" [src]="q.img" style="max-width: 800px; margin-left: 40px;">
     <div class="options">
       @for (option of q.questionOptions; track option; let optIdx = $index) {
-      <button class="option-btn" [class.selected]="answers[q.id] === optIdx"
+      <button class="option-btn" [class.selected]="answers[q.id] !== undefined && answers[q.id] === optIdx"
         (click)="selectAnswer(q.id, optIdx, option)">
-        <span class="option-letter" [class.selected]="answers[q.id] === optIdx">
+        <span class="option-letter" [class.selected]="answers[q.id] !== undefined && answers[q.id] === optIdx">
           {{ getLetter(optIdx) }}
         </span>
         {{ option.optionText }}
@@ -253,7 +254,7 @@
     </div>
   </div>
   }
-
+  }
 
   <!-- Navigation -->
   <div class="nav-bar">

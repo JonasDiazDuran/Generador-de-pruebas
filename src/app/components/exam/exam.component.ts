@@ -65,8 +65,9 @@ export class ExamComponent implements OnInit {
 
   get currentQuestions(): IExamQuestion[] {
     const start = this.currentPage * this.QUESTIONS_PER_PAGE;
-    return this.questions.slice(start, start + this.QUESTIONS_PER_PAGE);
-    
+    let readyQueas =  this.questions.slice(start, start + this.QUESTIONS_PER_PAGE);
+    return readyQueas;
+     
   }
 
   get answeredCount(): number {
@@ -105,23 +106,31 @@ export class ExamComponent implements OnInit {
       this.toastService.error('Por favor ingresa tu nombre');
       return;
     }
-    // this.questions = this.examService.generateExam(100);
-    this.examService.filter({filter : "", isFilter : false}).subscribe((response : ServiceResponse)=>{
+    this.answers={};
+    
+    this.examService.filter({filter : "", isFilter : true, idCategoria : this.studentForm.value.programa}).subscribe((response : ServiceResponse)=>{
       response.data.forEach((c : any)=>{
         this.questions.push({
           id : c.id,
           questionText: c.questionText,
-          idCategory: c.idCategoria,
+          idCategory: c.idCategory,
           img : c.img,
-          correctOption  : c.correctAnswer,
+          correctOption  : c.correctOption,
           questionOptions: c.questionOptions,
           shuffledOptions : c.questionOptions,
           shuffledCorrectAnswer : c.correctOption
-        } as IExamQuestion);
-      })
+        });
+      })  
+      
+      this.questions = this.examService.generateExam(this.questions, 100);
+
+      this.questions.forEach(q => {
+        this.answers[q.id] = null;
+      });
+      
     })
 
-    this.answers = {};
+    this.answers = {}; 
     this.currentPage = 0;
     this.phase = 'taking';
     this.toastService.success('Examen generado con 100 preguntas aleatorias');
@@ -129,7 +138,8 @@ export class ExamComponent implements OnInit {
 
   selectAnswer(questionId: number, optionIndex: number, option : IQuestionOption) {
     this.answers = { ...this.answers, [questionId]: optionIndex };
-    let question = this.answersForPost.find(c=>c.idQuestion);
+    // let question = this.answersForPost.find(c=>c.idQuestion);
+    let question = this.answersForPost.find(c => c.idQuestion === questionId);
     if(this.answersForPost.find(c=>c.idQuestion==questionId)!=undefined){
       this.answersForPost = this.answersForPost.filter(c=>c.idQuestion!==questionId)
     } 
@@ -140,7 +150,6 @@ export class ExamComponent implements OnInit {
       isCorrect : option.isCorrect
     })
 
-    console.log(this.answersForPost);
     
   }
 

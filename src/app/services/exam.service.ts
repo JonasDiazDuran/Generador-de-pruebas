@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
-import { Question, ExamQuestion, ExamResult, IExamQuestion, IRecinto, IQuestionCategory } from '../models/types';
+import { Question, ExamQuestion, ExamResult, IExamQuestion, IRecinto, IQuestionCategory, IQuestion } from '../models/types';
 import questionBank from '../data/question-bank';
 import { environment } from '../Environment/Environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -36,16 +36,38 @@ export class ExamService {
   setResults(data: ExamResult[]) {
     this.results$.next(data);
   }
-  generateExam(numQuestions: number = 100): ExamQuestion[] {
-    const selectedQuestions = this.shuffleArray(questionBank).slice(0, numQuestions);
+  generateExam(questions : IQuestion[],  numQuestions: number = 100): IExamQuestion[] {
+    console.log(questions);
+    
+    const selectedQuestions = this.shuffleArray(questions).slice(0, numQuestions);
+    console.log(selectedQuestions);
+    
+    
+    // id : c.id,
+    // questionText: c.questionText,
+    // idCategory: c.idCategoria,
+    // img : c.img,
+    // correctOption  : c.correctAnswer,
+    // questionOptions: c.questionOptions,
+    // shuffledOptions : c.questionOptions,
+    // shuffledCorrectAnswer : c.correctOption
+    return selectedQuestions.map((q) => {
 
-    return selectedQuestions.map((q: Question) => {
-      const correctAnswerText = q.options[q.correctAnswer];
-      const shuffledOptions = this.shuffleArray(q.options);
+      const correctAnswerText = q.questionOptions[q.correctOption].optionText;
+    
+      const shuffledOptions = this
+        .shuffleArray(q.questionOptions)
+        .map(opt => opt.optionText);
+    
       const shuffledCorrectAnswer = shuffledOptions.indexOf(correctAnswerText);
-
+    
       return {
-        ...q,
+        id: q.id,
+        questionText: q.questionText,
+        idCategory: q.idCategory,
+        img: q.img,
+        questionOptions: q.questionOptions,
+        correctOption: q.correctOption,
         shuffledOptions,
         shuffledCorrectAnswer,
       };
@@ -53,7 +75,7 @@ export class ExamService {
   }
 
   gradeExam(
-    questions: IExamQuestion[],
+    questions: IExamQuestion[], 
     answers: Record<number, number | null>,
     studentName: string,
     email : string,
@@ -124,7 +146,7 @@ export class ExamService {
     }
     return shuffled;
   }
-
+ 
 
 
 

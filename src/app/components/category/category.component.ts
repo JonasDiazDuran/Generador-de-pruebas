@@ -4,6 +4,7 @@ import { IQuestionCategory, ServiceResponse } from '../../models/types';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import { ImportHelper } from '../../helpers/importHelper';
 import * as Alerts from '../../helpers/alerts';
+import { LoaderComponent } from '../loader/loader.component';
 
 
 
@@ -15,8 +16,7 @@ declare var bootstrap: any; // si no usas import de Bootstrap JS directamente
   standalone: true,
   imports: [
     ImportHelper,
-    
-
+    LoaderComponent
   ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css'
@@ -25,6 +25,7 @@ export class CategoryComponent implements OnInit {
 
   myForm!: FormGroup;
   formFilter!: FormGroup;
+  isLoader : boolean = false;
 
   listCategory: IQuestionCategory[] = [];
   link : string = "";
@@ -48,10 +49,17 @@ export class CategoryComponent implements OnInit {
     this.getAll();
   }
 
-  
+  showLoader(){
+    this.isLoader=true;
+  }
+  hidenLoader(){
+    this.isLoader=false;
+  }
   getAll() {
+    this.showLoader()
     this.service.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
+        this.hidenLoader()
         this.listCategory = response.data;
       }
     });

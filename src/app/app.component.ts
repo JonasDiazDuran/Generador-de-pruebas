@@ -15,6 +15,7 @@ import { environment } from './Environment/Environment';
 import { initAlerts } from './helpers/alerts';
 import { ResultExamComponent } from './components/result-exam/result-exam.component';
 import { Router } from '@angular/router';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,8 @@ import { Router } from '@angular/router';
     ResultsComponent,
     ToastComponent,
     CategoryComponent,
-    ResultExamComponent
+    ResultExamComponent 
+    
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

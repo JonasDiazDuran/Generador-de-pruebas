@@ -1,5 +1,6 @@
-<div class="bank">
-
+<app-loader *ngIf="isLoader"></app-loader>
+<div class="bank" *ngIf="!isLoader">
+    
     <div class="bank-header">
         <div class="bank-header">
             <div class="bank-icon">
@@ -17,10 +18,9 @@
             <button class="badge badge-default" data-bs-toggle="modal" data-bs-target="#exampleModal">
                + Agregar
             </button>
-
-
         </div>
     </div>
+
 
 
 

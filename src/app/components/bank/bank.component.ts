@@ -6,6 +6,7 @@ import { ExamService } from '../../services/exam.service';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import * as Alerts from '../../helpers/alerts';
 import { ImportHelper } from '../../helpers/importHelper';
+import { LoaderComponent } from '../loader/loader.component';
 
 // interface Category {
 //   label: string;
@@ -16,7 +17,7 @@ declare var bootstrap: any; // si no usas import de Bootstrap JS directamente
 @Component({
   selector: 'app-bank',
   standalone: true,
-  imports: [ImportHelper],
+  imports: [ImportHelper, LoaderComponent],
   templateUrl: './bank.component.html',
   styleUrl: './bank.component.css',
 })
@@ -27,7 +28,7 @@ export class BankComponent implements OnInit {
   formData = new FormData();
   imageUrl: string | ArrayBuffer | null = null;
   selectedFile: File | undefined;
-
+  isLoader=false;
 
   constructor(private categoryService: CategoryQuestionService, private fb: FormBuilder) {
 
@@ -35,7 +36,12 @@ export class BankComponent implements OnInit {
 
 
 
-
+  showLoader(){
+    this.isLoader=true;
+  }
+  hidenLoader(){
+    this.isLoader=false;
+  }
   getAllCategory() {
     this.categoryService.filter({ filter: "", isFilter: false }).subscribe((response: ServiceResponse) => {
       if (response.status) {
@@ -152,8 +158,10 @@ export class BankComponent implements OnInit {
 
 
   getAll() {
+    this.showLoader();
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
+        this.hidenLoader();
         this.allQuestions = response.data;
       }
     });

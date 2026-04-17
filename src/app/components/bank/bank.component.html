@@ -1,6 +1,6 @@
+<app-loader *ngIf="isLoader==true"></app-loader>
 
-<div class="bank">
-  <app-loader *ngIf="isLoader==true"></app-loader>
+<div class="bank" *ngIf="isLoader==false">
 
   <div class="bank-header">
     <div class="bank-header">
@@ -57,6 +57,7 @@
   </div>
 
   <p class="count-label">{{allQuestions.length}} preguntas</p>
+
   <!-- Questions -->
 
   @for (q of allQuestions; track q.id; let i = $index) {

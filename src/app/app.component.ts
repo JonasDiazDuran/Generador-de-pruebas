@@ -66,7 +66,6 @@ export class AppComponent implements OnInit {
 
   // 🔥 helper para leer hash correctamente
   private getSegments(): string[] {
-    console.log(window.location.hash.replace('#/', '').split('/'));
     return window.location.hash.replace('#/', '').split('/');
   }
 

@@ -25,10 +25,10 @@ export class CategoryComponent implements OnInit {
 
   myForm!: FormGroup;
   formFilter!: FormGroup;
-  isLoader : boolean = false;
+  isLoader: boolean = false;
 
   listCategory: IQuestionCategory[] = [];
-  link : string = "";
+  link: string = "";
   constructor(
     private fb: FormBuilder,
     private service: CategoryQuestionService
@@ -49,24 +49,26 @@ export class CategoryComponent implements OnInit {
     this.getAll();
   }
 
-  showLoader(){
-    this.isLoader=true;
+  showLoader() {
+    this.isLoader = true;
   }
-  hidenLoader(){
-    this.isLoader=false;
+  hidenLoader() {
+    this.isLoader = false;
   }
-  getAll() {
+  getAll(showLoader : boolean = true) {
+   if(showLoader)
     this.showLoader()
     this.service.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
+        if(showLoader)
         this.hidenLoader()
         this.listCategory = response.data;
       }
     });
   }
 
-  getFilter(event : any){
-    this.formFilter.patchValue({isFilter : true})
+  getFilter(event: any) {
+    this.formFilter.patchValue({ isFilter: true })
     this.getAll()
   }
 
@@ -117,6 +119,13 @@ export class CategoryComponent implements OnInit {
     }
   }
 
+  closeTest(id: number) {
+    this.service.ChangeStatus(id).subscribe((response: ServiceResponse) => {
+      this.getAll(false);
+    })
+
+  }
+
   save() {
     if (this.myForm.valid) {
       if (this.myForm.value.id == null)
@@ -127,7 +136,7 @@ export class CategoryComponent implements OnInit {
     }
   }
 
- 
+
 
   closeModal() {
     const modalElement = document.getElementById('exampleModal');
@@ -138,8 +147,8 @@ export class CategoryComponent implements OnInit {
     }
   }
 
-  generateLink(idPrograma : number){
-    this.link =`${window.location}exam/${idPrograma}`; 
+  generateLink(idPrograma: number) {
+    this.link = `${window.location}exam/${idPrograma}`;
   }
 
   copyLink(linkInput: HTMLInputElement) {

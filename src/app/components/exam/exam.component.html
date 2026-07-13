@@ -1,6 +1,6 @@
 <!-- SETUP PHASE -->
 @if (phase === 'setup') {
-<div class="setup">
+<div class="setup" *ngIf='statusPrueba'>
   <div class="setup-header">
     <h2 class="setup-title">Preparar Examen</h2>
     <p class="setup-desc">Por favor, complete todos los campos requeridos antes de comenzar la prueba para que podamos
@@ -367,3 +367,21 @@
   </div>
 </div>
 }
+
+
+<div class="test-unavailable-container" *ngIf='!statusPrueba'>
+
+  <div class="icon-container">
+      <i class="icon">🔒</i>
+  </div>
+
+  <h2>Prueba diagnóstica no disponible</h2>
+
+  <p>
+      En este momento la prueba no se encuentra activa.
+      Por favor, intenta acceder más tarde o contacta al administrador.
+  </p>
+
+
+
+</div>

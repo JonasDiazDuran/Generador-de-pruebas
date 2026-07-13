@@ -40,6 +40,10 @@ export class CategoryQuestionService {
       .pipe(catchError(err => this.manejarError(err)));
   }
 
+  ChangeStatus(id: number): Observable<any> {
+    return this.http.get(`${this.urlBase}/changeStatus/${id}`)
+      .pipe(catchError(err => this.manejarError(err)));
+  }
   getById(id: number): Observable<any> {
     return this.http.get(`${this.urlBase}/${id}`)
       .pipe(catchError(err => this.manejarError(err)));

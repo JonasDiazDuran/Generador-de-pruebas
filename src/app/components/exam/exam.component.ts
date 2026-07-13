@@ -9,7 +9,7 @@ import * as Alerts from '../../helpers/alerts';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { DomSanitizer } from '@angular/platform-browser';
+
 
 
 type ExamPhase = 'setup' | 'taking' | 'review';
@@ -199,7 +199,6 @@ export class ExamComponent implements OnInit {
   
       return response.status;
     } catch (error) {
-      console.error(error);
       return false;
     }
   }
@@ -243,15 +242,18 @@ export class ExamComponent implements OnInit {
         programa: ['', Validators.required]
       });
 
-    
-      this.getAllRecintos();
-      this.getAllCategory();
+   
     }
-  ngOnInit(): void {
+    statusPrueba : boolean | any = true;
+   async ngOnInit(): Promise<void> {
+     
+    this.getAllRecintos();
+   await this.getAllCategory();
     const url = window.location.pathname;
     const segments= window.location.hash.replace('#/', '').split('/');    
     if (segments[0] === 'exam' && segments[1]) {
-      const id = segments[1];
+      const id = parseInt(segments[1]);
+      this.statusPrueba = this.categoriesList.find((c=>c.id==id))?.active;
       this.studentForm.patchValue({programa : id})
     }
   }
@@ -307,12 +309,21 @@ export class ExamComponent implements OnInit {
       })
     }
 
-    getAllCategory(){
-      this.categoryQuestionService.filter({filter : "", isFilter : false}).subscribe((response : ServiceResponse)=>{
-        if(response.status){
-          this.categoriesList =response.data;
-        }
-      })
+ 
+    async getAllCategory(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        this.categoryQuestionService
+          .filter({ filter: "", isFilter: false })
+          .subscribe({
+            next: (response: ServiceResponse) => {
+              if (response.status) {
+                this.categoriesList = response.data;
+              }
+              resolve();
+            },
+            error: (err) => reject(err)
+          });
+      });
     }
 
 

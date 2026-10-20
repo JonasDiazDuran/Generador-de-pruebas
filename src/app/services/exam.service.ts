@@ -37,10 +37,23 @@ export class ExamService {
     this.results$.next(data);
   }
   generateExam(questions : IQuestion[],  numQuestions: number = 100): IExamQuestion[] {
-    console.log(questions);
-    
-    const selectedQuestions = this.shuffleArray(questions).slice(0, numQuestions);
-    console.log(selectedQuestions);
+    const questionsByClassification = new Map<number, IQuestion[]>();
+    questions.forEach(question => {
+      const classificationQuestions = questionsByClassification.get(question.idClasificationQuestion) ?? [];
+      classificationQuestions.push(question);
+      questionsByClassification.set(question.idClasificationQuestion, classificationQuestions);
+    });
+
+    const shuffledGroups = Array.from(questionsByClassification.values())
+      .map(classificationQuestions => this.shuffleArray(classificationQuestions));
+    const selectedQuestions = shuffledGroups.map(classificationQuestions => classificationQuestions[0]);
+    const remainingQuestions = this.shuffleArray(shuffledGroups.flatMap(classificationQuestions => classificationQuestions.slice(1)));
+    const targetCount = Math.min(
+      questions.length,
+      Math.max(numQuestions, selectedQuestions.length)
+    );
+    selectedQuestions.push(...remainingQuestions.slice(0, targetCount - selectedQuestions.length));
+    const randomizedQuestions = this.shuffleArray(selectedQuestions);
     
     
     // id : c.id,
@@ -51,7 +64,7 @@ export class ExamService {
     // questionOptions: c.questionOptions,
     // shuffledOptions : c.questionOptions,
     // shuffledCorrectAnswer : c.correctOption
-    return selectedQuestions.map((q) => {
+    return randomizedQuestions.map((q) => {
 
       const correctAnswerText = q.questionOptions[q.correctOption].optionText;
     
@@ -65,6 +78,7 @@ export class ExamService {
         id: q.id,
         questionText: q.questionText,
         idCategory: q.idCategory,
+        idClasificationQuestion: q.idClasificationQuestion,
         img: q.img,
         questionOptions: q.questionOptions,
         correctOption: q.correctOption,

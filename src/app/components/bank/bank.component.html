@@ -5,7 +5,7 @@
   <div class="bank-header">
     <div class="bank-header">
 
-   
+
       <div class="bank-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -90,16 +90,6 @@
   </div>
   }
 
-  <!-- Pagination  -->
-  <!-- @if (totalPages > 1) {
-    <div class="pagination">
-      <button class="btn btn-outline btn-sm" [disabled]="page === 0" (click)="page = page - 1">Anterior</button>
-      <span class="page-info">{{ page + 1 }} / {{ totalPages }}</span>
-      <button class="btn btn-outline btn-sm" [disabled]="page === totalPages - 1" (click)="page = page + 1">Siguiente</button>
-    </div>
-  }
-</div> -->
-
   <!-- Modal -->
   <div data-bs-backdrop="static" class="modal fade modal-lg" id="exampleModal" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -117,7 +107,6 @@
             </div>
 
             <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
-              <!-- Texto de la pregunta -->
               <div class="form-group">
                 <label for="questionText" class="form-label">
                   Texto de la Pregunta <span class="required">*</span>
@@ -130,20 +119,34 @@
                 </span>
               </div>
 
-              <!-- Categoría -->
               <div class="form-group">
                 <label for="idCategory" class="form-label">
                   Programa <span class="required">*</span>
                 </label>
                 <select id="idCategory" formControlName="idCategory" class="form-select"
-                  [class.invalid]="isFieldInvalid('idCategory')">
-                  <option [ngValue]="null" disabled>Seleccione el programa al que pertenece la pregunta</option>
+                  [class.invalid]="isFieldInvalid('idCategory')" (change)="onProgramChange()">
+                  <option [ngValue]="null" disabled>Seleccione un programa</option>
                   <option *ngFor="let category of categories" [ngValue]="category.id">
                     {{ category.name }}
                   </option>
                 </select>
                 <span *ngIf="isFieldInvalid('idCategory')" class="error-message">
-                  Debes seleccionar una categoría
+                  Debes seleccionar un programa
+                </span>
+
+                <label for="idClasificationQuestion" class="form-label">
+                  Clasificación o tema <span class="required">*</span>
+                </label>
+                <select id="idClasificationQuestion" formControlName="idClasificationQuestion" class="form-select"
+                  [class.invalid]="isFieldInvalid('idClasificationQuestion')"
+                  [disabled]="!questionForm.get('idCategory')?.value || classificationsForSelectedCategory.length === 0">
+                  <option [ngValue]="null" disabled>Seleccione un tema o clasificación</option>
+                  <option *ngFor="let clasificacion of classificationsForSelectedCategory" [ngValue]="clasificacion.id">
+                    {{ clasificacion.descripcion }}
+                  </option>
+                </select>
+                <span *ngIf="isFieldInvalid('idClasificationQuestion')" class="error-message">
+                  Debes seleccionar un tema o clasificación
                 </span>
 
                 <div class="upload-container">
@@ -161,7 +164,6 @@
                     </div>
                   </label>
                 </div>
-
               </div>
 
               <!-- Opciones de respuesta -->

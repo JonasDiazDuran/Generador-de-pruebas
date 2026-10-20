@@ -55,21 +55,31 @@ export class CategoryComponent implements OnInit {
   hidenLoader() {
     this.isLoader = false;
   }
-  getAll(showLoader : boolean = true) {
-   if(showLoader)
-    this.showLoader()
+  getAll(showLoader: boolean = true) {
+    if (showLoader)
+    {
+      this.showLoader()
+    }
+    
     this.service.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
-        if(showLoader)
-        this.hidenLoader()
+        if (showLoader)
+          this.hidenLoader()
         this.listCategory = response.data;
       }
     });
   }
 
   getFilter(event: any) {
-    this.formFilter.patchValue({ isFilter: true })
-    this.getAll()
+    if (event.target.value.length > 3) {
+      this.formFilter.patchValue({ isFilter: true })
+      this.getAll(false);
+    }
+    if (event.target.value.length == 0) {
+      this.formFilter.patchValue({ isFilter: false })
+      this.getAll(false);
+    }
+
   }
 
   edit(category: IQuestionCategory) {

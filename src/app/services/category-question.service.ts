@@ -53,4 +53,6 @@ export class CategoryQuestionService {
     return this.http.post(`${this.urlBase}/filter`, form)
       .pipe(catchError(err => this.manejarError(err)));
   }
+
+
 }

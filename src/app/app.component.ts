@@ -15,7 +15,7 @@ import { environment } from './Environment/Environment';
 import { initAlerts } from './helpers/alerts';
 import { ResultExamComponent } from './components/result-exam/result-exam.component';
 import { Router } from '@angular/router';
-import { LoaderComponent } from './components/loader/loader.component';
+import { ClasificationQuestionComponent } from './components/clasification-question/clasification-question.component';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +29,8 @@ import { LoaderComponent } from './components/loader/loader.component';
     ResultsComponent,
     ToastComponent,
     CategoryComponent,
-    ResultExamComponent 
+    ResultExamComponent,
+    ClasificationQuestionComponent
     
   ],
   templateUrl: './app.component.html',
@@ -95,7 +96,8 @@ export class AppComponent implements OnInit {
 
     // ❌ no logueado
     if (!token && route !== 'exam' && route !== 'login') {
-      window.location.href = 'https://intranet.isfodosu.edu.do';
+      
+      //  window.location.href = 'https://intranet.isfodosu.edu.do';
       return;
     }
     // 🔥 si viene desde login con token

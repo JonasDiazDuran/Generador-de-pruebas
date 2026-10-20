@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { ExamQuestion, ExamResult, IExamQuestion, IQuestion, IQuestionCategory, IQuestionOption, IRecinto, ServiceResponse, iAnswrsPos } from '../../models/types';
+import { ExamQuestion, ExamResult, IExamQuestion, IQuestion, IQuestionCategory, IQuestionClasification, IQuestionOption, IRecinto, ServiceResponse, iAnswrsPos } from '../../models/types';
 import { ExamService } from '../../services/exam.service';
 import { ToastService } from '../../services/toast.service';
 import { ImportHelper } from '../../helpers/importHelper';
@@ -9,6 +9,7 @@ import * as Alerts from '../../helpers/alerts';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { ClasificationQuestionService } from '../../services/clasification-question.service';
 
 
 
@@ -26,6 +27,7 @@ export class ExamComponent implements OnInit {
   @Output() complete = new EventEmitter<ExamResult>();
 
   private examService = inject(ExamService);
+  private clasificationService = inject(ClasificationQuestionService);
   private toastService = inject(ToastService);
   private categoryQuestionService = inject(CategoryQuestionService);
 
@@ -46,7 +48,7 @@ export class ExamComponent implements OnInit {
 
   recintosList :  IRecinto[]=[];
   categoriesList : IQuestionCategory[]=[];
-
+  temasList : IQuestionClasification[]=[];
   questions: IExamQuestion[] = [];
   answers: Record<number, number | null> = {};
   answersForPost : iAnswrsPos[]=[];
@@ -63,11 +65,21 @@ export class ExamComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
-  get currentQuestions(): IExamQuestion[] {
+  get classifiedQuestions(): IExamQuestion[] {
+    const topicIds = new Set(this.temasList.map(tema => tema.id));
+    return this.questions.filter(question => topicIds.has(question.idClasificationQuestion));
+  }
+
+  get currentQuestions(): IQuestionClasification[] {
     const start = this.currentPage * this.QUESTIONS_PER_PAGE;
-    let readyQueas =  this.questions.slice(start, start + this.QUESTIONS_PER_PAGE);
-    return readyQueas;
-     
+    const pageQuestions = this.classifiedQuestions.slice(start, start + this.QUESTIONS_PER_PAGE);
+
+    return this.temasList
+      .map((tema: IQuestionClasification) => ({
+        ...tema,
+        questions: pageQuestions.filter(question => question.idClasificationQuestion === tema.id),
+      }))
+      .filter(tema => tema.questions?.length);
   }
 
   get answeredCount(): number {
@@ -78,8 +90,21 @@ export class ExamComponent implements OnInit {
     return this.questions.length > 0 ? Math.round((this.answeredCount / this.questions.length) * 100) : 0;
   }
 
+  getTemas(){
+    this.clasificationService.getClasificationWithQuestions().subscribe((response : ServiceResponse)=>{
+      if(response.status){
+        this.temasList = response.data;
+      }
+
+      logging: console.log("Temas cargados:", this.temasList);
+    })
+  }
   getLetter(idx: number): string {
     return String.fromCharCode(65 + idx);
+  }
+
+  getQuestionNumber(questionId: number): number {
+    return this.questions.findIndex(question => question.id === questionId) + 1;
   }
 
  async startExam() {
@@ -114,6 +139,7 @@ export class ExamComponent implements OnInit {
           id : c.id,
           questionText: c.questionText,
           idCategory: c.idCategory,
+          idClasificationQuestion: c.idClasificationQuestion ?? c.IdClasificationQuestion,
           img : c.img,
           correctOption  : c.correctOption,
           questionOptions: c.questionOptions,
@@ -122,7 +148,7 @@ export class ExamComponent implements OnInit {
         });
       })  
       
-      this.questions = this.examService.generateExam(this.questions, 100);
+      this.questions = this.examService.generateExam(this.classifiedQuestions, 100);
 
       this.questions.forEach(q => {
         this.answers[q.id] = null;
@@ -248,6 +274,7 @@ export class ExamComponent implements OnInit {
    async ngOnInit(): Promise<void> {
      
     this.getAllRecintos();
+    this.getTemas();
    await this.getAllCategory();
     const url = window.location.pathname;
     const segments= window.location.hash.replace('#/', '').split('/');    
@@ -318,6 +345,7 @@ export class ExamComponent implements OnInit {
             next: (response: ServiceResponse) => {
               if (response.status) {
                 this.categoriesList = response.data;
+                console.log(this.categoriesList);
               }
               resolve();
             },

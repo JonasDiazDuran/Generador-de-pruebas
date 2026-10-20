@@ -1,12 +1,13 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { IQuestion, IQuestionCategory, Question, ServiceResponse } from '../../models/types';
+import { IQuestion, IQuestionCategory, IQuestionClasification, Question, ServiceResponse } from '../../models/types';
 import { ExamService } from '../../services/exam.service';
 import { CategoryQuestionService } from '../../services/category-question.service';
 import * as Alerts from '../../helpers/alerts';
 import { ImportHelper } from '../../helpers/importHelper';
 import { LoaderComponent } from '../loader/loader.component';
+import { ClasificationQuestionService } from '../../services/clasification-question.service';
 
 // interface Category {
 //   label: string;
@@ -28,19 +29,22 @@ export class BankComponent implements OnInit {
   formData = new FormData();
   imageUrl: string | ArrayBuffer | null = null;
   selectedFile: File | undefined;
-  isLoader=false;
+  isLoader = false;
 
-  constructor(private categoryService: CategoryQuestionService, private fb: FormBuilder) {
-
+  constructor(
+    private categoryService: CategoryQuestionService,
+    private clasificationService: ClasificationQuestionService,
+    private fb: FormBuilder
+  ) {
   }
 
 
 
-  showLoader(){
-    this.isLoader=true;
+  showLoader() {
+    this.isLoader = true;
   }
-  hidenLoader(){
-    this.isLoader=false;
+  hidenLoader() {
+    this.isLoader = false;
   }
   getAllCategory() {
     this.categoryService.filter({ filter: "", isFilter: false }).subscribe((response: ServiceResponse) => {
@@ -70,6 +74,19 @@ export class BankComponent implements OnInit {
 
   // allQuestions: Question[] = this.examService.getQuestionBank();
   allQuestions: IQuestion[] = [];
+  listClasificacionQuestion: IQuestionClasification[] = [];
+
+  get classificationsForSelectedCategory(): IQuestionClasification[] {
+    const categoryId = this.questionForm?.get('idCategory')?.value;
+    if (categoryId == null) {
+      return [];
+    }
+
+    return this.listClasificacionQuestion.filter(
+      classification => Number(classification.idCategoryQuestion) === Number(categoryId)
+    );
+  }
+
 
 
   search = '';
@@ -148,6 +165,7 @@ export class BankComponent implements OnInit {
     });
 
     this.getAll();
+    this.getAllClasifications();
   }
 
   showAll() {
@@ -157,8 +175,29 @@ export class BankComponent implements OnInit {
   }
 
 
-  getAll() {
-    this.showLoader();
+  getAllClasifications() {
+    this.clasificationService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
+      if (response.status) {
+        this.listClasificacionQuestion = response.data;
+      }
+    });
+  }
+
+
+
+  getAllClasificacion() {
+    this.clasificationService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
+      if (response.status) {
+        this.listClasificacionQuestion = response.data;
+      }
+    });
+  }
+
+
+  getAll(showLoader: boolean = true) {
+    if (showLoader) {
+      this.showLoader();
+    }
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
         this.hidenLoader();
@@ -168,8 +207,15 @@ export class BankComponent implements OnInit {
   }
 
   getFilter(event: any) {
-    this.formFilter.patchValue({ isFilter: true })
-    this.getAll()
+    if (event.target.value.length > 3) {
+      this.formFilter.patchValue({ isFilter: true });
+      this.getAll(false);
+    }
+    if (event.target.value.length == 0) {
+      this.formFilter.patchValue({ isFilter: false });
+      this.getAll();
+    }
+
   }
 
   edit(question: IQuestion) {
@@ -178,8 +224,12 @@ export class BankComponent implements OnInit {
     })
     this.questionForm.reset(question)
     this.imageUrl = question.img;
-
   }
+
+  onProgramChange(): void {
+    this.questionForm.get('idClasificationQuestion')?.reset(null);
+  }
+
   resetMyForm() {
     this.myForm.reset();
     this.imageUrl = null;
@@ -191,7 +241,9 @@ export class BankComponent implements OnInit {
       if (response.status) {
         Alerts.showSuccess(response.message, 'Éxito');
         this.getAll();
+        this.formData = new FormData(); // Reset formData after successful insert
         this.closeModal();
+
       }
     })
   }
@@ -201,6 +253,7 @@ export class BankComponent implements OnInit {
     this.examService.update(this.formData).subscribe((response: ServiceResponse) => {
       if (response.status) {
         Alerts.showSuccess(response.message, 'Éxito');
+        this.formData = new FormData(); // Reset formData after successful insert
         this.getAll();
         this.closeModal();
       }
@@ -227,34 +280,35 @@ export class BankComponent implements OnInit {
 
 
   save() {
-    console.log( this.questionForm.value);
-    
+
     if (this.questionForm.valid) {
       // Solo agregar id si existe
       if (this.questionForm.value.id != null) {
-        this.formData.append('id', this.questionForm.value.id .toString());
+        this.formData.append('id', this.questionForm.value.id.toString());
       }
 
+      this.formData.append('idClasificationQuestion', this.questionForm.value.idClasificationQuestion.toString());
+
       // Evitar null o undefined
-      this.formData.append('questionText',  this.questionForm.value.questionText ?? '');
+      this.formData.append('questionText', this.questionForm.value.questionText ?? '');
 
       // Validar idCategoria antes de usar toString()
-      if ( this.questionForm.value.idCategory != null) {
-        this.formData.append('idCategory',  this.questionForm.value.idCategory.toString());
+      if (this.questionForm.value.idCategory != null) {
+        this.formData.append('idCategory', this.questionForm.value.idCategory.toString());
       }
 
       // Asegurar que siempre sea un array válido
       this.formData.append(
         'questionOptions',
-        JSON.stringify( this.questionForm.value.questionOptions ?? [])
+        JSON.stringify(this.questionForm.value.questionOptions ?? [])
       );
 
       if (this.questionForm.value.id == null) {
         this.insert();
 
+
       } else {
         this.update();
-
       }
     } else {
       Alerts.showInfo("Debe completar los campos para poder guardar.", 'Precaución');
@@ -284,6 +338,7 @@ export class BankComponent implements OnInit {
       id: [null],
       questionText: ['', [Validators.required, Validators.minLength(5)]],
       idCategory: [null, Validators.required],
+      idClasificationQuestion: [null, Validators.required],
       questionOptions: this.fb.array([], Validators.minLength(2)),
     });
 
@@ -345,7 +400,7 @@ export class BankComponent implements OnInit {
   resetForm(): void {
     this.questionForm.reset();
     this.questionOptions.clear();
-    this.imageUrl=null;
+    this.imageUrl = null;
     // this.addOption();
     // this.addOption();
   }

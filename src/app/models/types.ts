@@ -4,6 +4,14 @@ export interface IQuestionCategory {
   active : boolean
 }
 
+export interface IQuestionClasification {
+  id: number;
+  idCategoryQuestion: number;
+  descripcion: string;
+  active : boolean
+  questions? : IQuestion[];  
+}
+
 
 export interface IQuestionOption {
   id : number;
@@ -25,6 +33,7 @@ export interface IQuestion {
   id : number,
   questionText: string;
   idCategory: number;
+  idClasificationQuestion: number;
   correctOption  : number;
   questionOptions: IQuestionOption[];
   img : string;
@@ -100,4 +109,4 @@ export interface IRecinto {
   latitud: string;
 }
 
-export type AppView = 'home' | 'category' | 'examResult' |  'exam' | 'results' | 'bank';
+export type AppView = 'home' | 'category' | 'clasification' | 'examResult' |  'exam' | 'results' | 'bank';

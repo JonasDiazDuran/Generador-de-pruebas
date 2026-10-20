@@ -1,0 +1,101 @@
+<app-loader *ngIf="isLoader"></app-loader>
+<div class="bank" *ngIf="!isLoader">
+
+    <div class="bank-header">
+        <div class="bank-header">
+            <div class="bank-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="bank-title">Clasificación de preguntas</h2>
+                <p class="bank-subtitle">Aqui puedes categorizar las preguntas por programa.</p>
+            </div>
+        </div>
+        <div>
+            <button class="badge badge-default" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                + Agregar
+            </button>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <form [formGroup]="formFilter">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input formControlName="filter" type="text" (input)="getFilter($event)" class="input search-input"
+                placeholder="Escribe el nombre de la categoría y presiona Enter">
+
+        </form>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of listClasificacion">
+                <th scope="row">{{c.id}}</th>
+                <td>{{c.descripcion}}</td>
+                <td>
+
+                   
+
+                    <button (click)="edit(c)" type="button" class="badge badge-success  me-1"
+                        data-bs-target="#exampleModal" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">Editar</button>
+                   
+                    <button (click)="delete(c.id)" type="button" class="badge  badge-destructive ">Eliminar</button>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div data-bs-backdrop="static" class="modal fade" id="exampleModal" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Clasificación de las preguntas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form [formGroup]="myForm">
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Seleccione un programa</label>
+                            <select formControlName="idCategoryQuestion" class="form-control" id="idCategoryQuestion">
+                                <!-- <option value="">Seleccione un programa</option> -->
+                                <option *ngFor="let p of listPrograms" [value]="p.id">{{p.name}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Descripción</label>
+                            <input formControlName="descripcion" type="email" class="form-control" id="exampleInputEmail1"
+                                aria-describedby="emailHelp" placeholder="Nombre o descripción">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" (click)="resetMyForm()" class="badge badge-outline"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" (click)="save()" class="badge badge-default">Agregar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+

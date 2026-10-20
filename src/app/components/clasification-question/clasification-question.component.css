@@ -1,0 +1,100 @@
+.bank {
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+.bank-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: space-between !important;
+  }
+  
+.bank-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: rgba(30, 64, 175, 0.08);
+    color: var(--primary);
+  }
+  
+.link-modal .custom-modal {
+    border-radius: 14px;
+    padding: 10px;
+  }
+  
+.link-modal .modal-title {
+    font-weight: 600;
+    font-size: 20px;
+  }
+  
+.link-modal .message {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+.link-container {
+    display: flex;
+    gap: 10px;
+  }
+  
+.link-input {
+    border-radius: 8px;
+  }
+  
+.copy-btn {
+    border-radius: 8px;
+    padding: 6px 18px;
+  }
+  
+.modal-footer .btn {
+    min-width: 120px;
+  }
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #dc3545;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .3s;
+}
+
+input:checked + .slider {
+    background: #28a745;
+}
+
+input:checked + .slider::before {
+    transform: translateX(24px);
+}

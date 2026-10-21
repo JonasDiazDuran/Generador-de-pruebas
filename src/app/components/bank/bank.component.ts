@@ -287,7 +287,9 @@ export class BankComponent implements OnInit {
         this.formData.append('id', this.questionForm.value.id.toString());
       }
 
-      this.formData.append('idClasificationQuestion', this.questionForm.value.idClasificationQuestion.toString());
+      if (this.questionForm.value.idClasificationQuestion != null) {
+        this.formData.append('idClasificationQuestion', this.questionForm.value.idClasificationQuestion.toString());
+      }
 
       // Evitar null o undefined
       this.formData.append('questionText', this.questionForm.value.questionText ?? '');
@@ -338,7 +340,7 @@ export class BankComponent implements OnInit {
       id: [null],
       questionText: ['', [Validators.required, Validators.minLength(5)]],
       idCategory: [null, Validators.required],
-      idClasificationQuestion: [null, Validators.required],
+      idClasificationQuestion: [null],
       questionOptions: this.fb.array([], Validators.minLength(2)),
     });
 

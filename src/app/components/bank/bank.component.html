@@ -130,12 +130,11 @@
                     {{ category.name }}
                   </option>
                 </select>
-                <span *ngIf="isFieldInvalid('idCategory')" class="error-message">
-                  Debes seleccionar un programa
-                </span>
-
+                  <span *ngIf="isFieldInvalid('idCategory')" class="error-message">
+                    Debes seleccionar un programa
+                  </span>
                 <label for="idClasificationQuestion" class="form-label">
-                  Clasificación o tema <span class="required">*</span>
+                  Clasificación o tema <span class="optional">(opcional)</span>
                 </label>
                 <select id="idClasificationQuestion" formControlName="idClasificationQuestion" class="form-select"
                   [class.invalid]="isFieldInvalid('idClasificationQuestion')"
@@ -145,10 +144,6 @@
                     {{ clasificacion.descripcion }}
                   </option>
                 </select>
-                <span *ngIf="isFieldInvalid('idClasificationQuestion')" class="error-message">
-                  Debes seleccionar un tema o clasificación
-                </span>
-
                 <div class="upload-container">
                   <label for="imagen" class="upload-box">
                     <input type="file" id="imagen" (change)="onFileSelected($event)">

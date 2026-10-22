@@ -66,20 +66,38 @@ export class ExamComponent implements OnInit {
   }
 
   get classifiedQuestions(): IExamQuestion[] {
-    const topicIds = new Set(this.temasList.map(tema => tema.id));
-    return this.questions.filter(question => topicIds.has(question.idClasificationQuestion));
+    return this.questions;
   }
 
   get currentQuestions(): IQuestionClasification[] {
     const start = this.currentPage * this.QUESTIONS_PER_PAGE;
-    const pageQuestions = this.classifiedQuestions.slice(start, start + this.QUESTIONS_PER_PAGE);
+    const pageQuestions = this.questions.slice(start, start + this.QUESTIONS_PER_PAGE);
+    const topicIds = new Set(this.temasList.map(tema => Number(tema.id)));
+    const unclassifiedQuestions = pageQuestions.filter(question =>
+      question.idClasificationQuestion == null ||
+      !topicIds.has(Number(question.idClasificationQuestion))
+    );
 
-    return this.temasList
+    const questionsByTopic = this.temasList
       .map((tema: IQuestionClasification) => ({
         ...tema,
-        questions: pageQuestions.filter(question => question.idClasificationQuestion === tema.id),
+        questions: pageQuestions.filter(
+          question => Number(question.idClasificationQuestion) === Number(tema.id)
+        ),
       }))
       .filter(tema => tema.questions?.length);
+
+    if (unclassifiedQuestions.length > 0) {
+      questionsByTopic.push({
+        id: -1,
+        idCategoryQuestion: 0,
+        descripcion: 'Sin clasificación',
+        active: true,
+        questions: unclassifiedQuestions,
+      });
+    }
+
+    return questionsByTopic;
   }
 
   get answeredCount(): number {

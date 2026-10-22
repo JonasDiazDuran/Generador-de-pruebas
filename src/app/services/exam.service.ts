@@ -38,21 +38,34 @@ export class ExamService {
   }
   generateExam(questions : IQuestion[],  numQuestions: number = 100): IExamQuestion[] {
     const questionsByClassification = new Map<number, IQuestion[]>();
+    const unclassifiedQuestions: IQuestion[] = [];
+
     questions.forEach(question => {
+      if (question.idClasificationQuestion == null) {
+        unclassifiedQuestions.push(question);
+        return;
+      }
+
       const classificationQuestions = questionsByClassification.get(question.idClasificationQuestion) ?? [];
       classificationQuestions.push(question);
       questionsByClassification.set(question.idClasificationQuestion, classificationQuestions);
     });
 
-    const shuffledGroups = Array.from(questionsByClassification.values())
+    const targetCount = Math.min(questions.length, Math.max(0, numQuestions));
+    const shuffledGroups = this.shuffleArray(Array.from(questionsByClassification.values()))
       .map(classificationQuestions => this.shuffleArray(classificationQuestions));
-    const selectedQuestions = shuffledGroups.map(classificationQuestions => classificationQuestions[0]);
-    const remainingQuestions = this.shuffleArray(shuffledGroups.flatMap(classificationQuestions => classificationQuestions.slice(1)));
-    const targetCount = Math.min(
-      questions.length,
-      Math.max(numQuestions, selectedQuestions.length)
+    const selectedQuestions = shuffledGroups
+      .slice(0, targetCount)
+      .map(classificationQuestions => classificationQuestions[0]);
+    const remainingClassifiedQuestions = this.shuffleArray(
+      shuffledGroups.flatMap(classificationQuestions => classificationQuestions.slice(1))
     );
-    selectedQuestions.push(...remainingQuestions.slice(0, targetCount - selectedQuestions.length));
+    selectedQuestions.push(...remainingClassifiedQuestions.slice(0, targetCount - selectedQuestions.length));
+
+    if (selectedQuestions.length < targetCount) {
+      selectedQuestions.push(...this.shuffleArray(unclassifiedQuestions).slice(0, targetCount - selectedQuestions.length));
+    }
+
     const randomizedQuestions = this.shuffleArray(selectedQuestions);
     
     

@@ -201,9 +201,17 @@ export class BankComponent implements OnInit {
     this.examService.filter(this.formFilter.value).subscribe((response: ServiceResponse) => {
       if (response.status) {
         this.hidenLoader();
-        this.allQuestions = response.data;
+        this.allQuestions = [...response.data].sort(
+          (questionA, questionB) => Number(this.hasClassification(questionB)) - Number(this.hasClassification(questionA))
+        );
       }
     });
+  }
+
+  private hasClassification(question: IQuestion): boolean {
+    const classificationId = question.idClasificationQuestion ??
+      (question as IQuestion & { IdClasificationQuestion?: number | null }).IdClasificationQuestion;
+    return classificationId != null;
   }
 
   getFilter(event: any) {
@@ -222,8 +230,29 @@ export class BankComponent implements OnInit {
     question.questionOptions.forEach(c => {
       this.addOption()
     })
-    this.questionForm.reset(question)
+    this.questionForm.reset({ ...question, idClasificationQuestion: null })
     this.imageUrl = question.img;
+
+    if (question.idCategory != null) {
+      this.listClasificacionQuestion = [];
+      this.clasificationService.filter({
+        filter: '',
+        isFilter: false,
+        idCategoryQuestion: question.idCategory
+      }).subscribe((response: ServiceResponse) => {
+        if (response.status && Number(this.questionForm.get('idCategory')?.value) === Number(question.idCategory)) {
+          this.listClasificacionQuestion = response.data;
+          const hasClassification = this.listClasificacionQuestion.some(
+            classification => Number(classification.id) === Number(question.idClasificationQuestion)
+          );
+          this.questionForm.patchValue({
+            idClasificationQuestion: hasClassification ? question.idClasificationQuestion : null
+          });
+        }
+      });
+    } else {
+      this.listClasificacionQuestion = [];
+    }
   }
 
   onProgramChange(): void {

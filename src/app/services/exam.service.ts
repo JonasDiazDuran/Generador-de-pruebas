@@ -38,11 +38,9 @@ export class ExamService {
   }
   generateExam(questions : IQuestion[],  numQuestions: number = 100): IExamQuestion[] {
     const questionsByClassification = new Map<number, IQuestion[]>();
-    const unclassifiedQuestions: IQuestion[] = [];
 
     questions.forEach(question => {
       if (question.idClasificationQuestion == null) {
-        unclassifiedQuestions.push(question);
         return;
       }
 
@@ -51,7 +49,9 @@ export class ExamService {
       questionsByClassification.set(question.idClasificationQuestion, classificationQuestions);
     });
 
-    const targetCount = Math.min(questions.length, Math.max(0, numQuestions));
+    const classifiedQuestionCount = Array.from(questionsByClassification.values())
+      .reduce((total, classificationQuestions) => total + classificationQuestions.length, 0);
+    const targetCount = Math.min(classifiedQuestionCount, Math.max(0, numQuestions));
     const shuffledGroups = this.shuffleArray(Array.from(questionsByClassification.values()))
       .map(classificationQuestions => this.shuffleArray(classificationQuestions));
     const selectedQuestions = shuffledGroups
@@ -61,10 +61,6 @@ export class ExamService {
       shuffledGroups.flatMap(classificationQuestions => classificationQuestions.slice(1))
     );
     selectedQuestions.push(...remainingClassifiedQuestions.slice(0, targetCount - selectedQuestions.length));
-
-    if (selectedQuestions.length < targetCount) {
-      selectedQuestions.push(...this.shuffleArray(unclassifiedQuestions).slice(0, targetCount - selectedQuestions.length));
-    }
 
     const randomizedQuestions = this.shuffleArray(selectedQuestions);
     
